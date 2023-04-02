@@ -1,0 +1,1 @@
+copy store.Instruments FROM '/var/lib/postgresql/data/instruments.csv' DELIMITER ';' CSV HEADER;

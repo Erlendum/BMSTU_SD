@@ -1,0 +1,25 @@
+version: '3.7'
+
+volumes:
+  postgres:
+
+services:
+  postgres:
+    container_name: postgres_db
+    build: ./
+    user: root
+    environment:
+      POSTGRES_DB: "Music Store"
+      POSTGRES_USER: erlendum
+      POSTGRES_PASSWORD: parasha
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+        - ./data:/var/lib/postgresql/data
+    ports:
+        - 5432:5432
+    networks:
+        - my_persistent_network
+
+networks:
+  my_persistent_network:
+    driver: bridge
