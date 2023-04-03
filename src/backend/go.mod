@@ -6,6 +6,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.43.0
 	github.com/golang/mock v1.6.0
 	github.com/jackc/pgx v3.6.2+incompatible
+	github.com/jinzhu/copier v0.3.5
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.2

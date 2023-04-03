@@ -7,10 +7,20 @@ import (
 	"backend/internal/repository"
 	"database/sql"
 	"errors"
+	"github.com/jinzhu/copier"
 	"github.com/jmoiron/sqlx"
 	"strconv"
 )
 
+type InstrumentPostgres struct {
+	InstrumentId uint64 `db:"instrument_id"`
+	Name         string `db:"instrument_name"`
+	Price        uint64 `db:"instrument_price"`
+	Material     string `db:"instrument_material"`
+	Type         string `db:"instrument_type"`
+	Brand        string `db:"instrument_brand"`
+	Img          string `db:"instrument_img"`
+}
 type instrumentPostgresRepository struct {
 	db *sqlx.DB
 }
@@ -83,25 +93,36 @@ func (i *instrumentPostgresRepository) Delete(id uint64) error {
 
 func (i *instrumentPostgresRepository) Get(id uint64) (*models.Instrument, error) {
 	query := `select * from store.instruments where instrument_id = $1`
-	instrument := &models.Instrument{}
+	instrumentPostgres := &InstrumentPostgres{}
 
-	err := i.db.Get(instrument, query, id)
+	err := i.db.Get(instrumentPostgres, query, id)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, repositoryErrors.ObjectDoesNotExists
 	} else if err != nil {
 		return nil, err
 	}
+	instrument := &models.Instrument{}
+	err = copier.Copy(instrument, instrumentPostgres)
+	if err != nil {
+		return nil, err
+	}
+
 	return instrument, nil
 }
 
 func (i *instrumentPostgresRepository) GetList() ([]models.Instrument, error) {
 	query := `select * from store.instruments;`
 
+	var instrumentsPostgres []InstrumentPostgres
 	var instruments []models.Instrument
-	err := i.db.Select(&instruments, query)
+	err := i.db.Select(&instrumentsPostgres, query)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, repositoryErrors.ObjectDoesNotExists
 	} else if err != nil {
+		return nil, err
+	}
+	err = copier.Copy(instruments, instrumentsPostgres)
+	if err != nil {
 		return nil, err
 	}
 	return instruments, nil

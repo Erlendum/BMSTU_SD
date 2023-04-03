@@ -74,8 +74,6 @@ var testInstrumentPostgresRepositoryDeleteFailed = []struct {
 }
 
 func TestInstrumentPostgresRepositoryDelete(t *testing.T) {
-	t.Parallel()
-
 	for _, tt := range testInstrumentPostgresRepositoryDeleteSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
@@ -141,8 +139,6 @@ var testInstrumentPostgresRepositoryCreateFailed = []struct {
 }
 
 func TestInstrumentPostgresRepositoryCreate(t *testing.T) {
-	t.Parallel()
-
 	for _, tt := range testInstrumentPostgresRepositoryCreateSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
@@ -212,8 +208,6 @@ var testInstrumentPostgresRepositoryUpdateFailed = []struct {
 }
 
 func TestInstrumentPostgresRepositoryUpdate(t *testing.T) {
-	t.Parallel()
-
 	for _, tt := range testInstrumentPostgresRepositoryUpdateSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
@@ -226,6 +220,7 @@ func TestInstrumentPostgresRepositoryUpdate(t *testing.T) {
 			rand.Seed(time.Now().Unix())
 			err := instrumentRepository.Update(tt.InputData.instrumentId, tt.InputData.fieldsToUpdate)
 
+			instrumentRepository.Delete(0)
 			tt.CheckOutput(t, err)
 		})
 	}
@@ -238,6 +233,107 @@ func TestInstrumentPostgresRepositoryUpdate(t *testing.T) {
 			instrumentRepository := createInstrumentPostgresRepository(fields)
 
 			err := instrumentRepository.Update(tt.InputData.instrumentId, tt.InputData.fieldsToUpdate)
+
+			tt.CheckOutput(t, err)
+		})
+	}
+}
+
+var testInstrumentPostgresRepositoryGetSuccess = []struct {
+	TestName  string
+	InputData struct {
+		instrumentId uint64
+	}
+	CheckOutput func(t *testing.T, instrument *models.Instrument, err error)
+}{
+	{
+		TestName: "usual test",
+		InputData: struct {
+			instrumentId uint64
+		}{instrumentId: 0},
+		CheckOutput: func(t *testing.T, instrument *models.Instrument, err error) {
+			require.NoError(t, err)
+			require.Equal(t, instrument, &models.Instrument{InstrumentId: 0})
+		},
+	},
+}
+
+var testInstrumentPostgresRepositoryGetFailed = []struct {
+	TestName  string
+	InputData struct {
+		instrumentId uint64
+	}
+	CheckOutput func(t *testing.T, err error)
+}{
+
+	{
+		TestName: "instrument does not exists",
+		InputData: struct {
+			instrumentId uint64
+		}{instrumentId: 218939393},
+		CheckOutput: func(t *testing.T, err error) {
+			require.Error(t, err)
+		},
+	},
+}
+
+func TestInstrumentPostgresRepositoryGet(t *testing.T) {
+	for _, tt := range testInstrumentPostgresRepositoryGetSuccess {
+		tt := tt
+		t.Run(tt.TestName, func(t *testing.T) {
+			fields := createInstrumentPostgresRepositoryFields()
+
+			instrumentRepository := createInstrumentPostgresRepository(fields)
+
+			instrumentRepository.Create(&models.Instrument{InstrumentId: 0})
+
+			rand.Seed(time.Now().Unix())
+			instrument, err := instrumentRepository.Get(tt.InputData.instrumentId)
+
+			instrumentRepository.Delete(0)
+			tt.CheckOutput(t, instrument, err)
+		})
+	}
+
+	for _, tt := range testInstrumentPostgresRepositoryGetFailed {
+		tt := tt
+		t.Run(tt.TestName, func(t *testing.T) {
+			fields := createInstrumentPostgresRepositoryFields()
+
+			instrumentRepository := createInstrumentPostgresRepository(fields)
+
+			_, err := instrumentRepository.Get(tt.InputData.instrumentId)
+
+			tt.CheckOutput(t, err)
+		})
+	}
+}
+
+var testInstrumentPostgresRepositoryGetListSuccess = []struct {
+	TestName  string
+	InputData struct {
+	}
+	CheckOutput func(t *testing.T, err error)
+}{
+	{
+		TestName: "usual test",
+		InputData: struct {
+		}{},
+		CheckOutput: func(t *testing.T, err error) {
+			require.NoError(t, err)
+		},
+	},
+}
+
+func TestInstrumentPostgresRepositoryGetList(t *testing.T) {
+	for _, tt := range testInstrumentPostgresRepositoryGetListSuccess {
+		tt := tt
+		t.Run(tt.TestName, func(t *testing.T) {
+			fields := createInstrumentPostgresRepositoryFields()
+
+			instrumentRepository := createInstrumentPostgresRepository(fields)
+
+			_, err := instrumentRepository.GetList()
 
 			tt.CheckOutput(t, err)
 		})
