@@ -8,7 +8,9 @@ import (
 	"database/sql"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/require"
+	"math/rand"
 	"testing"
+	"time"
 )
 
 type instrumentPostgresRepositoryFields struct {
@@ -163,6 +165,79 @@ func TestInstrumentPostgresRepositoryCreate(t *testing.T) {
 			instrumentRepository := createInstrumentPostgresRepository(fields)
 
 			err := instrumentRepository.Create(tt.InputData.instrument)
+
+			tt.CheckOutput(t, err)
+		})
+	}
+}
+
+var testInstrumentPostgresRepositoryUpdateSuccess = []struct {
+	TestName  string
+	InputData struct {
+		instrumentId   uint64
+		fieldsToUpdate models.InstrumentFieldsToUpdate
+	}
+	CheckOutput func(t *testing.T, err error)
+}{
+	{
+		TestName: "usual test",
+		InputData: struct {
+			instrumentId   uint64
+			fieldsToUpdate models.InstrumentFieldsToUpdate
+		}{instrumentId: 0, fieldsToUpdate: map[models.InstrumentField]any{models.InstrumentFieldName: "qt", models.InstrumentFieldPrice: 3000}},
+		CheckOutput: func(t *testing.T, err error) {
+			require.NoError(t, err)
+		},
+	},
+}
+
+var testInstrumentPostgresRepositoryUpdateFailed = []struct {
+	TestName  string
+	InputData struct {
+		instrumentId   uint64
+		fieldsToUpdate models.InstrumentFieldsToUpdate
+	}
+	CheckOutput func(t *testing.T, err error)
+}{
+	{
+		TestName: "instrument does not exists",
+		InputData: struct {
+			instrumentId   uint64
+			fieldsToUpdate models.InstrumentFieldsToUpdate
+		}{instrumentId: 218939393, fieldsToUpdate: map[models.InstrumentField]any{models.InstrumentFieldName: "qt", models.InstrumentFieldPrice: rand.Intn(40404040)}},
+		CheckOutput: func(t *testing.T, err error) {
+			require.Error(t, err)
+		},
+	},
+}
+
+func TestInstrumentPostgresRepositoryUpdate(t *testing.T) {
+	t.Parallel()
+
+	for _, tt := range testInstrumentPostgresRepositoryUpdateSuccess {
+		tt := tt
+		t.Run(tt.TestName, func(t *testing.T) {
+			fields := createInstrumentPostgresRepositoryFields()
+
+			instrumentRepository := createInstrumentPostgresRepository(fields)
+
+			instrumentRepository.Create(&models.Instrument{InstrumentId: 0})
+
+			rand.Seed(time.Now().Unix())
+			err := instrumentRepository.Update(tt.InputData.instrumentId, tt.InputData.fieldsToUpdate)
+
+			tt.CheckOutput(t, err)
+		})
+	}
+
+	for _, tt := range testInstrumentPostgresRepositoryUpdateFailed {
+		tt := tt
+		t.Run(tt.TestName, func(t *testing.T) {
+			fields := createInstrumentPostgresRepositoryFields()
+
+			instrumentRepository := createInstrumentPostgresRepository(fields)
+
+			err := instrumentRepository.Update(tt.InputData.instrumentId, tt.InputData.fieldsToUpdate)
 
 			tt.CheckOutput(t, err)
 		})

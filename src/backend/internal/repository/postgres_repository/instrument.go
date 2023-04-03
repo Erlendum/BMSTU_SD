@@ -59,8 +59,9 @@ func (i *instrumentPostgresRepository) Update(id uint64, fieldsToUpdate models.I
 	fields = append(fields, id)
 	query += ` where instrument_id = $` + strconv.Itoa(len(fields)) + ";"
 
-	_, err := i.db.Exec(query, fields...)
-	if errors.Is(err, sql.ErrNoRows) {
+	res, err := i.db.Exec(query, fields...)
+	count, _ := res.RowsAffected()
+	if count == 0 || errors.Is(err, sql.ErrNoRows) {
 		return repositoryErrors.ObjectDoesNotExists
 	} else if err != nil {
 		return err
