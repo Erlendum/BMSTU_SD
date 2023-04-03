@@ -8,7 +8,7 @@ create table store.Instruments
 	instrument_name text not null,
 	instrument_price int,
 	instrument_material text not null,
-	intrument_type text not null,
+	instrument_type text not null,
 	instrument_brand text not null,
 	instrument_img text not null
 );	

@@ -9,6 +9,7 @@ const (
 	InstrumentFieldMaterial
 	InstrumentFieldType
 	InstrumentFieldBrand
+	InstrumentFieldImg
 )
 
 type Instrument struct {
@@ -18,4 +19,5 @@ type Instrument struct {
 	Material     string
 	Type         string
 	Brand        string
+	Img          string
 }

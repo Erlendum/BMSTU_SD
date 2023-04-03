@@ -1,0 +1,12 @@
+{
+  "postgres": {
+    "host": "127.0.0.1",
+    "user": "erlendum",
+    "password": "parasha",
+    "port": "5432",
+    "dbname": "MusicStore"
+  },
+
+  "port": ":8080",
+  "address": "0.0.0.0"
+}
