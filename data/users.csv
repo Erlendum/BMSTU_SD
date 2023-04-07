@@ -1,0 +1,2 @@
+user_ud;user_login;user_password;user_fio;user_date_birth;user_gender;user_is_admin
+1;admin;admin;admin;2003-01-22;Мужской;true

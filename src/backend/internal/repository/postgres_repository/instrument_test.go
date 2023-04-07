@@ -1,41 +1,13 @@
 package postgres_repository
 
 import (
-	"backend/config"
 	"backend/internal/models"
 	"backend/internal/pkg/errors/repositoryErrors"
-	"backend/internal/repository"
-	"database/sql"
-	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/require"
 	"math/rand"
 	"testing"
 	"time"
 )
-
-type instrumentPostgresRepositoryFields struct {
-	db     *sql.DB
-	config config.Config
-}
-
-func createInstrumentPostgresRepository(fields *instrumentPostgresRepositoryFields) repository.InstrumentRepository {
-	dbx := sqlx.NewDb(fields.db, "pgx")
-
-	return NewInstrumentPostgresRepository(dbx)
-}
-
-func createInstrumentPostgresRepositoryFields() *instrumentPostgresRepositoryFields {
-	fields := new(instrumentPostgresRepositoryFields)
-	err := fields.config.ParseConfig("config.json", "../../../config")
-	if err != nil {
-		return nil
-	}
-	fields.db, err = fields.config.Postgres.InitDB()
-	if err != nil {
-		return nil
-	}
-	return fields
-}
 
 var testInstrumentPostgresRepositoryDeleteSuccess = []struct {
 	TestName  string
@@ -77,9 +49,9 @@ func TestInstrumentPostgresRepositoryDelete(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryDeleteSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := createInstrumentPostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields()
 
-			instrumentRepository := createInstrumentPostgresRepository(fields)
+			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
 			instrumentRepository.Create(&models.Instrument{InstrumentId: 0})
 			err := instrumentRepository.Delete(tt.InputData.instrumentId)
@@ -91,9 +63,9 @@ func TestInstrumentPostgresRepositoryDelete(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryDeleteFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := createInstrumentPostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields()
 
-			instrumentRepository := createInstrumentPostgresRepository(fields)
+			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
 			err := instrumentRepository.Delete(tt.InputData.instrumentId)
 
@@ -142,9 +114,9 @@ func TestInstrumentPostgresRepositoryCreate(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryCreateSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := createInstrumentPostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields()
 
-			instrumentRepository := createInstrumentPostgresRepository(fields)
+			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
 			err := instrumentRepository.Create(tt.InputData.instrument)
 			instrumentRepository.Delete(tt.InputData.instrument.InstrumentId)
@@ -156,9 +128,9 @@ func TestInstrumentPostgresRepositoryCreate(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryCreateFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := createInstrumentPostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields()
 
-			instrumentRepository := createInstrumentPostgresRepository(fields)
+			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
 			err := instrumentRepository.Create(tt.InputData.instrument)
 
@@ -211,16 +183,16 @@ func TestInstrumentPostgresRepositoryUpdate(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryUpdateSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := createInstrumentPostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields()
 
-			instrumentRepository := createInstrumentPostgresRepository(fields)
+			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
 			instrumentRepository.Create(&models.Instrument{InstrumentId: 0})
 
 			rand.Seed(time.Now().Unix())
 			err := instrumentRepository.Update(tt.InputData.instrumentId, tt.InputData.fieldsToUpdate)
 
-			instrumentRepository.Delete(0)
+			instrumentRepository.Delete(tt.InputData.instrumentId)
 			tt.CheckOutput(t, err)
 		})
 	}
@@ -228,9 +200,9 @@ func TestInstrumentPostgresRepositoryUpdate(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryUpdateFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := createInstrumentPostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields()
 
-			instrumentRepository := createInstrumentPostgresRepository(fields)
+			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
 			err := instrumentRepository.Update(tt.InputData.instrumentId, tt.InputData.fieldsToUpdate)
 
@@ -281,9 +253,9 @@ func TestInstrumentPostgresRepositoryGet(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryGetSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := createInstrumentPostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields()
 
-			instrumentRepository := createInstrumentPostgresRepository(fields)
+			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
 			instrumentRepository.Create(&models.Instrument{InstrumentId: 0})
 
@@ -298,9 +270,9 @@ func TestInstrumentPostgresRepositoryGet(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryGetFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := createInstrumentPostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields()
 
-			instrumentRepository := createInstrumentPostgresRepository(fields)
+			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
 			_, err := instrumentRepository.Get(tt.InputData.instrumentId)
 
@@ -329,9 +301,9 @@ func TestInstrumentPostgresRepositoryGetList(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryGetListSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := createInstrumentPostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields()
 
-			instrumentRepository := createInstrumentPostgresRepository(fields)
+			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
 			_, err := instrumentRepository.GetList()
 

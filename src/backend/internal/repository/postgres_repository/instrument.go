@@ -21,15 +21,15 @@ type InstrumentPostgres struct {
 	Brand        string `db:"instrument_brand"`
 	Img          string `db:"instrument_img"`
 }
-type instrumentPostgresRepository struct {
+type InstrumentPostgresRepository struct {
 	db *sqlx.DB
 }
 
 func NewInstrumentPostgresRepository(db *sqlx.DB) repository.InstrumentRepository {
-	return &instrumentPostgresRepository{db: db}
+	return &InstrumentPostgresRepository{db: db}
 }
 
-func (i *instrumentPostgresRepository) Create(instrument *models.Instrument) error {
+func (i *InstrumentPostgresRepository) Create(instrument *models.Instrument) error {
 	query := `insert into store.instruments (instrument_id, instrument_name, instrument_price, instrument_material,
 											 instrument_type, instrument_brand, instrument_img) values
 											 ($1, $2, $3, $4, $5, $6, $7);`
@@ -40,7 +40,7 @@ func (i *instrumentPostgresRepository) Create(instrument *models.Instrument) err
 	return nil
 }
 
-func (i *instrumentPostgresRepository) instrumentFieldToDBField(field models.InstrumentField) string {
+func (i *InstrumentPostgresRepository) instrumentFieldToDBField(field models.InstrumentField) string {
 	switch field {
 	case models.InstrumentFieldName:
 		return "instrument_name"
@@ -58,7 +58,7 @@ func (i *instrumentPostgresRepository) instrumentFieldToDBField(field models.Ins
 	return ""
 }
 
-func (i *instrumentPostgresRepository) Update(id uint64, fieldsToUpdate models.InstrumentFieldsToUpdate) error {
+func (i *InstrumentPostgresRepository) Update(id uint64, fieldsToUpdate models.InstrumentFieldsToUpdate) error {
 	updateFields := make(map[string]any, len(fieldsToUpdate))
 	for key, value := range fieldsToUpdate {
 		updateFields[i.instrumentFieldToDBField(key)] = value
@@ -79,7 +79,7 @@ func (i *instrumentPostgresRepository) Update(id uint64, fieldsToUpdate models.I
 	return nil
 }
 
-func (i *instrumentPostgresRepository) Delete(id uint64) error {
+func (i *InstrumentPostgresRepository) Delete(id uint64) error {
 	query := `delete from store.instruments where instrument_id = $1`
 	res, err := i.db.Exec(query, id)
 	count, _ := res.RowsAffected()
@@ -91,7 +91,7 @@ func (i *instrumentPostgresRepository) Delete(id uint64) error {
 	return nil
 }
 
-func (i *instrumentPostgresRepository) Get(id uint64) (*models.Instrument, error) {
+func (i *InstrumentPostgresRepository) Get(id uint64) (*models.Instrument, error) {
 	query := `select * from store.instruments where instrument_id = $1`
 	instrumentPostgres := &InstrumentPostgres{}
 
@@ -110,7 +110,7 @@ func (i *instrumentPostgresRepository) Get(id uint64) (*models.Instrument, error
 	return instrument, nil
 }
 
-func (i *instrumentPostgresRepository) GetList() ([]models.Instrument, error) {
+func (i *InstrumentPostgresRepository) GetList() ([]models.Instrument, error) {
 	query := `select * from store.instruments;`
 
 	var instrumentsPostgres []InstrumentPostgres
@@ -121,9 +121,14 @@ func (i *instrumentPostgresRepository) GetList() ([]models.Instrument, error) {
 	} else if err != nil {
 		return nil, err
 	}
-	err = copier.Copy(instruments, instrumentsPostgres)
-	if err != nil {
-		return nil, err
+
+	for instrumentPostgres := range instrumentsPostgres {
+		instrument := &models.Instrument{}
+		err = copier.Copy(instrument, &instrumentPostgres)
+		if err != nil {
+			return nil, err
+		}
+		instruments = append(instruments, *instrument)
 	}
 	return instruments, nil
 }
