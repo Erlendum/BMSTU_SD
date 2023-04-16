@@ -49,11 +49,13 @@ func TestDiscountPostgresRepositoryDelete(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryDeleteSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			discountRepository := CreateDiscountPostgresRepository(fields)
 
-			discountRepository.Create(&models.Discount{DiscountId: 0, InstrumentId: 1, UserId: 1})
+			fields.Db.Exec("insert into store.discounts (discount_id, instrument_id, user_id, discount_amount, discount_type, discount_date_begin, discount_date_end) values ($1, $2, $3, $4, $5, $6, $7)",
+				tt.InputData.discountId, 1, 1, 1, "", time.Now(), time.Now())
+
 			err := discountRepository.Delete(tt.InputData.discountId)
 
 			tt.CheckOutput(t, err)
@@ -63,78 +65,11 @@ func TestDiscountPostgresRepositoryDelete(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryDeleteFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			discountRepository := CreateDiscountPostgresRepository(fields)
 
 			err := discountRepository.Delete(tt.InputData.discountId)
-
-			tt.CheckOutput(t, err)
-		})
-	}
-}
-
-var testDiscountPostgresRepositoryCreateSuccess = []struct {
-	TestName  string
-	InputData struct {
-		discount *models.Discount
-	}
-	CheckOutput func(t *testing.T, err error)
-}{
-	{
-		TestName: "usual test",
-		InputData: struct {
-			discount *models.Discount
-		}{discount: &models.Discount{DiscountId: 1, InstrumentId: 1, UserId: 1}},
-		CheckOutput: func(t *testing.T, err error) {
-			require.NoError(t, err)
-		},
-	},
-}
-
-var testDiscountPostgresRepositoryCreateFailed = []struct {
-	TestName  string
-	InputData struct {
-		discount *models.Discount
-	}
-	CheckOutput func(t *testing.T, err error)
-}{
-	{
-		TestName: "discount with that id already exists",
-		InputData: struct {
-			discount *models.Discount
-		}{discount: &models.Discount{DiscountId: 1, InstrumentId: 1, UserId: 1}},
-		CheckOutput: func(t *testing.T, err error) {
-			require.Error(t, err)
-		},
-	},
-}
-
-func TestDiscountPostgresRepositoryCreate(t *testing.T) {
-	for _, tt := range testDiscountPostgresRepositoryCreateSuccess {
-		tt := tt
-		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
-
-			discountRepository := CreateDiscountPostgresRepository(fields)
-			discountRepository.Delete(tt.InputData.discount.InstrumentId)
-			err := discountRepository.Create(tt.InputData.discount)
-			discountRepository.Delete(tt.InputData.discount.InstrumentId)
-
-			tt.CheckOutput(t, err)
-		})
-	}
-
-	for _, tt := range testDiscountPostgresRepositoryCreateFailed {
-		tt := tt
-		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
-
-			discountRepository := CreateDiscountPostgresRepository(fields)
-
-			discountRepository.Create(tt.InputData.discount)
-			err := discountRepository.Create(tt.InputData.discount)
-			discountRepository.Delete(tt.InputData.discount.InstrumentId)
 
 			tt.CheckOutput(t, err)
 		})
@@ -185,11 +120,13 @@ func TestDiscountPostgresRepositoryUpdate(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryUpdateSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			discountRepository := CreateDiscountPostgresRepository(fields)
 
-			discountRepository.Create(&models.Discount{DiscountId: 0, UserId: 1, InstrumentId: 1})
+			var nilTime time.Time
+			fields.Db.Exec("insert into store.discounts (discount_id, instrument_id, user_id, discount_amount, discount_type, discount_date_begin, discount_date_end) values ($1, $2, $3, $4, $5, $6, $7)",
+				tt.InputData.discountId, 1, 1, 0, "", nilTime, nilTime)
 
 			rand.Seed(time.Now().Unix())
 			err := discountRepository.Update(tt.InputData.discountId, tt.InputData.fieldsToUpdate)
@@ -202,7 +139,7 @@ func TestDiscountPostgresRepositoryUpdate(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryUpdateFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			discountRepository := CreateDiscountPostgresRepository(fields)
 
@@ -255,15 +192,17 @@ func TestDiscountPostgresRepositoryGet(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryGetSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			discountRepository := CreateDiscountPostgresRepository(fields)
-
-			discountRepository.Create(&models.Discount{DiscountId: 0, InstrumentId: 1, UserId: 1})
+			var nilTime time.Time
+			fields.Db.Exec("insert into store.discounts (discount_id, instrument_id, user_id, discount_amount, discount_type, discount_date_begin, discount_date_end) values ($1, $2, $3, $4, $5, $6, $7)",
+				tt.InputData.discountId, 1, 1, 0, "", nilTime, nilTime)
 
 			discount, err := discountRepository.Get(tt.InputData.discountId)
 
 			discountRepository.Delete(tt.InputData.discountId)
+
 			tt.CheckOutput(t, discount, err)
 		})
 	}
@@ -271,7 +210,7 @@ func TestDiscountPostgresRepositoryGet(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryGetFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
@@ -302,7 +241,7 @@ func TestDiscountPostgresRepositoryGetList(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryGetListSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			discountRepository := CreateDiscountPostgresRepository(fields)
 
@@ -337,7 +276,7 @@ func TestDiscountPostgresRepositoryGetSpecificList(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryGetSpecificListSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			discountRepository := CreateDiscountPostgresRepository(fields)
 

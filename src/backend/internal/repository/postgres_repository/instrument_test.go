@@ -38,7 +38,7 @@ var testInstrumentPostgresRepositoryDeleteFailed = []struct {
 		TestName: "instrument does not exists",
 		InputData: struct {
 			instrumentId uint64
-		}{instrumentId: 80000000},
+		}{instrumentId: 80000},
 		CheckOutput: func(t *testing.T, err error) {
 			require.ErrorIs(t, err, repositoryErrors.ObjectDoesNotExists)
 		},
@@ -49,12 +49,14 @@ func TestInstrumentPostgresRepositoryDelete(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryDeleteSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
+			var id uint64 = 0
+			fields.Db.Exec("insert into store.instruments (instrument_id, instrument_name, instrument_price, instrument_material, instrument_type, instrument_brand, instrument_img) values ($1, $2, $3, $4, $5, $6, $7)",
+				id, "", 0, "", "", "", "")
 
-			instrumentRepository.Create(&models.Instrument{InstrumentId: 0})
-			err := instrumentRepository.Delete(tt.InputData.instrumentId)
+			err := instrumentRepository.Delete(id)
 
 			tt.CheckOutput(t, err)
 		})
@@ -63,7 +65,7 @@ func TestInstrumentPostgresRepositoryDelete(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryDeleteFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
@@ -92,47 +94,16 @@ var testInstrumentPostgresRepositoryCreateSuccess = []struct {
 	},
 }
 
-var testInstrumentPostgresRepositoryCreateFailed = []struct {
-	TestName  string
-	InputData struct {
-		instrument *models.Instrument
-	}
-	CheckOutput func(t *testing.T, err error)
-}{
-	{
-		TestName: "instrument with that id already exists",
-		InputData: struct {
-			instrument *models.Instrument
-		}{instrument: &models.Instrument{InstrumentId: 1}},
-		CheckOutput: func(t *testing.T, err error) {
-			require.Error(t, err)
-		},
-	},
-}
-
 func TestInstrumentPostgresRepositoryCreate(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryCreateSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
 			err := instrumentRepository.Create(tt.InputData.instrument)
 			instrumentRepository.Delete(tt.InputData.instrument.InstrumentId)
-
-			tt.CheckOutput(t, err)
-		})
-	}
-
-	for _, tt := range testInstrumentPostgresRepositoryCreateFailed {
-		tt := tt
-		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
-
-			instrumentRepository := CreateInstrumentPostgresRepository(fields)
-
-			err := instrumentRepository.Create(tt.InputData.instrument)
 
 			tt.CheckOutput(t, err)
 		})
@@ -183,11 +154,12 @@ func TestInstrumentPostgresRepositoryUpdate(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryUpdateSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
-			instrumentRepository.Create(&models.Instrument{InstrumentId: 0})
+			fields.Db.Exec("insert into store.instruments (instrument_id, instrument_name, instrument_price, instrument_material, instrument_type, instrument_brand, instrument_img) values ($1, $2, $3, $4, $5, $6, $7)",
+				tt.InputData.instrumentId, "", 0, "", "", "", "")
 
 			rand.Seed(time.Now().Unix())
 			err := instrumentRepository.Update(tt.InputData.instrumentId, tt.InputData.fieldsToUpdate)
@@ -200,7 +172,7 @@ func TestInstrumentPostgresRepositoryUpdate(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryUpdateFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
@@ -253,11 +225,12 @@ func TestInstrumentPostgresRepositoryGet(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryGetSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
-			instrumentRepository.Create(&models.Instrument{InstrumentId: 0})
+			fields.Db.Exec("insert into store.instruments (instrument_id, instrument_name, instrument_price, instrument_material, instrument_type, instrument_brand, instrument_img) values ($1, $2, $3, $4, $5, $6, $7)",
+				tt.InputData.instrumentId, "", 0, "", "", "", "")
 
 			rand.Seed(time.Now().Unix())
 			instrument, err := instrumentRepository.Get(tt.InputData.instrumentId)
@@ -270,7 +243,7 @@ func TestInstrumentPostgresRepositoryGet(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryGetFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
@@ -301,7 +274,7 @@ func TestInstrumentPostgresRepositoryGetList(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryGetListSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 

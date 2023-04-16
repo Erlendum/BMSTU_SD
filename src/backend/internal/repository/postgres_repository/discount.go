@@ -32,10 +32,10 @@ func NewDiscountPostgresRepository(db *sqlx.DB) repository.DiscountRepository {
 }
 
 func (i *DiscountPostgresRepository) Create(discount *models.Discount) error {
-	query := `insert into store.discounts (discount_id, instrument_id, user_id, discount_amount,
+	query := `insert into store.discounts (instrument_id, user_id, discount_amount,
 											 discount_type, discount_date_begin, discount_date_end) values
-											 ($1, $2, $3, $4, $5, $6, $7);`
-	_, err := i.db.Exec(query, discount.DiscountId, discount.InstrumentId, discount.UserId,
+											 ($1, $2, $3, $4, $5, $6);`
+	_, err := i.db.Exec(query, discount.InstrumentId, discount.UserId,
 		discount.Amount, discount.Type, discount.DateBegin, discount.DateEnd)
 	if err != nil {
 		return err

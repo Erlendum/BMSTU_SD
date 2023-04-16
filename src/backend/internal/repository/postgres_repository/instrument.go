@@ -30,10 +30,10 @@ func NewInstrumentPostgresRepository(db *sqlx.DB) repository.InstrumentRepositor
 }
 
 func (i *InstrumentPostgresRepository) Create(instrument *models.Instrument) error {
-	query := `insert into store.instruments (instrument_id, instrument_name, instrument_price, instrument_material,
+	query := `insert into store.instruments (instrument_name, instrument_price, instrument_material,
 											 instrument_type, instrument_brand, instrument_img) values
-											 ($1, $2, $3, $4, $5, $6, $7);`
-	_, err := i.db.Exec(query, instrument.InstrumentId, instrument.Name, instrument.Price, instrument.Material, instrument.Type, instrument.Brand, instrument.Img)
+											 ($1, $2, $3, $4, $5, $6);`
+	_, err := i.db.Exec(query, instrument.Name, instrument.Price, instrument.Material, instrument.Type, instrument.Brand, instrument.Img)
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func (i *InstrumentPostgresRepository) Get(id uint64) (*models.Instrument, error
 }
 
 func (i *InstrumentPostgresRepository) GetList() ([]models.Instrument, error) {
-	query := `select * from store.instruments;`
+	query := `select * from store.instruments order by instrument_id;`
 
 	var instrumentsPostgres []InstrumentPostgres
 	var instruments []models.Instrument
@@ -122,9 +122,9 @@ func (i *InstrumentPostgresRepository) GetList() ([]models.Instrument, error) {
 		return nil, err
 	}
 
-	for instrumentPostgres := range instrumentsPostgres {
+	for i := range instrumentsPostgres {
 		instrument := &models.Instrument{}
-		err = copier.Copy(instrument, &instrumentPostgres)
+		err = copier.Copy(instrument, &instrumentsPostgres[i])
 		if err != nil {
 			return nil, err
 		}

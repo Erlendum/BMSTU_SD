@@ -4,6 +4,8 @@ import (
 	"backend/internal/models"
 	"backend/internal/pkg/errors/repositoryErrors"
 	"backend/internal/pkg/errors/serviceErrors"
+	"backend/internal/pkg/hasher"
+	"backend/internal/pkg/hasher/implementation"
 	"backend/internal/repository"
 	"backend/internal/services"
 )
@@ -12,6 +14,7 @@ type userServiceImplementation struct {
 	userRepository           repository.UserRepository
 	comparisonListRepository repository.ComparisonListRepository
 	calcDiscountService      services.CalcDiscountService
+	hasher                   hasher.Hasher
 }
 
 func NewUserServiceImplementation(userRepository repository.UserRepository, comparisonListRepository repository.ComparisonListRepository, calcDiscountService services.CalcDiscountService) services.UserService {
@@ -19,6 +22,7 @@ func NewUserServiceImplementation(userRepository repository.UserRepository, comp
 		userRepository:           userRepository,
 		comparisonListRepository: comparisonListRepository,
 		calcDiscountService:      calcDiscountService,
+		hasher:                   &implementation.BcryptHasher{},
 	}
 }
 
@@ -30,9 +34,23 @@ func (u *userServiceImplementation) Create(user *models.User, password string) e
 		return serviceErrors.UserAlreadyExists
 	}
 
-	user.Password = password
+	hashPassword, err := u.hasher.GetHash(password)
+	if err != nil {
+		return err
+	}
+	user.Password = string(hashPassword)
 
-	return u.userRepository.Create(user)
+	err = u.userRepository.Create(user)
+	if err != nil {
+		return err
+	}
+
+	newUser, err := u.userRepository.Get(user.Login)
+	if err != nil {
+		return err
+	}
+
+	return u.comparisonListRepository.Create(&models.ComparisonList{UserId: newUser.UserId})
 }
 
 func (u *userServiceImplementation) Get(login string, password string) (*models.User, error) {
@@ -43,7 +61,7 @@ func (u *userServiceImplementation) Get(login string, password string) (*models.
 		return nil, err
 	}
 
-	if user.Password != password {
+	if !u.hasher.Check(user.Password, password) {
 		return nil, serviceErrors.InvalidPassword
 	}
 

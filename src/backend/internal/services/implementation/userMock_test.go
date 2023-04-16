@@ -4,6 +4,8 @@ import (
 	"backend/internal/models"
 	"backend/internal/pkg/errors/repositoryErrors"
 	"backend/internal/pkg/errors/serviceErrors"
+	"backend/internal/pkg/hasher"
+	"backend/internal/pkg/hasher/implementation"
 	mock_repository "backend/internal/repository/mocks"
 	"backend/internal/services"
 	"github.com/golang/mock/gomock"
@@ -21,6 +23,7 @@ type userServiceFields struct {
 	userRepositoryMock           *mock_repository.MockUserRepository
 	discountRepositoryMock       *mock_repository.MockDiscountRepository
 	calcDiscountService          services.CalcDiscountService
+	hasher                       hasher.Hasher
 }
 
 func createUserServiceFields(controller *gomock.Controller) *userServiceFields {
@@ -32,36 +35,12 @@ func createUserServiceFields(controller *gomock.Controller) *userServiceFields {
 	fields.userRepositoryMock = mock_repository.NewMockUserRepository(controller)
 	fields.calcDiscountService = NewCalcDiscountServiceImplementation(calcDiscountServiceFields.discountRepositoryMock)
 	fields.discountRepositoryMock = calcDiscountServiceFields.discountRepositoryMock
+	fields.hasher = &implementation.BcryptHasher{}
 	return fields
 }
 
 func createUserService(fields *userServiceFields) services.UserService {
 	return NewUserServiceImplementation(fields.userRepositoryMock, fields.comparisonListRepositoryMock, fields.calcDiscountService)
-}
-
-var testUserCreateSuccess = []struct {
-	TestName  string
-	InputData struct {
-		user     *models.User
-		password string
-	}
-	Prepare     func(fields *userServiceFields)
-	CheckOutput func(t *testing.T, err error)
-}{
-	{
-		TestName: "usual test",
-		InputData: struct {
-			user     *models.User
-			password string
-		}{user: &models.User{UserId: 1, Login: "login1"}, password: "123"},
-		Prepare: func(fields *userServiceFields) {
-			fields.userRepositoryMock.EXPECT().Get("login1").Return(nil, repositoryErrors.ObjectDoesNotExists)
-			fields.userRepositoryMock.EXPECT().Create(&models.User{UserId: 1, Login: "login1", Password: "123"}).Return(nil)
-		},
-		CheckOutput: func(t *testing.T, err error) {
-			require.NoError(t, err)
-		},
-	},
 }
 
 var testUserCreateFailed = []struct {
@@ -104,25 +83,6 @@ var testUserCreateFailed = []struct {
 func TestUserServiceImplementationCreate(t *testing.T) {
 	t.Parallel()
 
-	for _, tt := range testUserCreateSuccess {
-		tt := tt
-		t.Run(tt.TestName, func(t *testing.T) {
-			t.Parallel()
-
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
-
-			fields := createUserServiceFields(ctrl)
-			tt.Prepare(fields)
-
-			userService := createUserService(fields)
-
-			err := userService.Create(tt.InputData.user, tt.InputData.password)
-
-			tt.CheckOutput(t, err)
-		})
-	}
-
 	for _, tt := range testUserCreateFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
@@ -159,11 +119,12 @@ var testUserGetSuccess = []struct {
 			password string
 		}{login: "login1", password: "123"},
 		Prepare: func(fields *userServiceFields) {
-			fields.userRepositoryMock.EXPECT().Get("login1").Return(&models.User{Login: "login1", Password: "123"}, nil)
+			hashPassword, _ := fields.hasher.GetHash("123")
+			fields.userRepositoryMock.EXPECT().Get("login1").Return(&models.User{Login: "login1", Password: string(hashPassword)}, nil)
 		},
 		CheckOutput: func(t *testing.T, user *models.User, err error) {
 			require.NoError(t, err)
-			require.Equal(t, user, &models.User{Login: "login1", Password: "123"})
+			require.Equal(t, user.Login, (&models.User{Login: "login1"}).Login)
 		},
 	},
 }

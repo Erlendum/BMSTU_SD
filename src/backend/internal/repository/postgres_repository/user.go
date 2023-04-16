@@ -30,10 +30,10 @@ func NewUserPostgresRepository(db *sqlx.DB) repository.UserRepository {
 }
 
 func (i *UserPostgresRepository) Create(user *models.User) error {
-	query := `insert into store.users (user_id, user_login, user_password, user_fio,
+	query := `insert into store.users (user_login, user_password, user_fio,
 											 user_date_birth, user_gender, user_is_admin) values
-											 ($1, $2, $3, $4, $5, $6, $7);`
-	_, err := i.db.Exec(query, user.UserId, user.Login, user.Password, user.Fio, user.DateBirth,
+											 ($1, $2, $3, $4, $5, $6);`
+	_, err := i.db.Exec(query, user.Login, user.Password, user.Fio, user.DateBirth,
 		user.Gender, user.IsAdmin)
 	if err != nil {
 		return err

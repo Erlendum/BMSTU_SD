@@ -68,25 +68,6 @@ func (a *App) initServices(r *appRepositoryFields) *appServiceFields {
 	return u
 }
 
-//func (a *App) ParseConfig(pathToConfig string, configFileName string) error {
-//	v := viper.New()
-//	v.SetConfigName(configFileName)
-//	v.SetConfigType("json")
-//	v.AddConfigPath(pathToConfig)
-//
-//	err := v.ReadInConfig()
-//	if err != nil {
-//		return err
-//	}
-//
-//	err = v.Unmarshal(&a.Config)
-//	if err != nil {
-//		return err
-//	}
-//
-//	return nil
-//}
-
 func (a *App) Init() {
 	a.ctrl = gomock.NewController(nil)
 	a.repositories = a.initRepositories(a.ctrl)

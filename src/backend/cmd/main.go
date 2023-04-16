@@ -1,16 +1,12 @@
 package main
 
 import (
-	"backend/cmd/modes"
+	"backend/cmd/console"
 )
 
 func main() {
-	app := modes.App{}
-	//err := app.ParseConfig("./config", "config")
-	//if err != nil {
-	//	log.Fatal(err)
-	//	return
-	//}
+	//app := modes.App{}
+	app := console.App{}
 
 	app.Run()
 }

@@ -56,7 +56,7 @@ func TestUserPostgresRepositoryGet(t *testing.T) {
 	for _, tt := range testUserPostgresRepositoryGetSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			userRepository := CreateUserPostgresRepository(fields)
 
@@ -69,7 +69,7 @@ func TestUserPostgresRepositoryGet(t *testing.T) {
 	for _, tt := range testUserPostgresRepositoryGetFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			userRepository := CreateUserPostgresRepository(fields)
 
@@ -129,7 +129,7 @@ func TestUserPostgresRepositoryGetById(t *testing.T) {
 	for _, tt := range testUserPostgresRepositoryGetByIdSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			userRepository := CreateUserPostgresRepository(fields)
 
@@ -142,7 +142,7 @@ func TestUserPostgresRepositoryGetById(t *testing.T) {
 	for _, tt := range testUserPostgresRepositoryGetByIdFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields()
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
 
 			userRepository := CreateUserPostgresRepository(fields)
 

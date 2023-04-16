@@ -22,7 +22,7 @@ type userServiceFieldsPostgres struct {
 
 func createUserServiceFieldsPostgres() *userServiceFieldsPostgres {
 	fields := new(userServiceFieldsPostgres)
-	fieldsPostgres := postgres_repository.CreatePostgresRepositoryFields()
+	fieldsPostgres := postgres_repository.CreatePostgresRepositoryFields("config.json", "../../../config")
 
 	calcDiscountServiceFields := new(calcDiscountServiceFieldsForUserPostgres)
 

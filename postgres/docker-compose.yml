@@ -5,7 +5,7 @@ volumes:
 
 services:
   postgres:
-    container_name: postgres_db
+    container_name: postgres_db_sd
     build: ./
     user: root
     environment:

@@ -16,7 +16,7 @@ type comparisonListServiceFieldsPostgres struct {
 func createComparisonListServiceFieldsPostgres() *comparisonListServiceFieldsPostgres {
 	fields := new(comparisonListServiceFieldsPostgres)
 
-	repositoryFields := postgres_repository.CreatePostgresRepositoryFields()
+	repositoryFields := postgres_repository.CreatePostgresRepositoryFields("config.json", "../../../config")
 	instrumentRepository := postgres_repository.CreateInstrumentPostgresRepository(repositoryFields)
 	comparisonListRepository := postgres_repository.CreateComparisonListPostgresRepository(repositoryFields)
 

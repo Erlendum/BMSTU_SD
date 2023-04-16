@@ -26,9 +26,9 @@ func NewComparisonListPostgresRepository(db *sqlx.DB) repository.ComparisonListR
 }
 
 func (i *ComparisonListPostgresRepository) Create(comparisonList *models.ComparisonList) error {
-	query := `insert into store.comparisonLists (comparisonList_id, user_id, comparisonList_total_price, comparisonList_amount) values
-											 ($1, $2, $3, $4);`
-	_, err := i.db.Exec(query, comparisonList.ComparisonListId, comparisonList.UserId, comparisonList.TotalPrice,
+	query := `insert into store.comparisonLists (user_id, comparisonList_total_price, comparisonList_amount) values
+											 ($1, $2, $3);`
+	_, err := i.db.Exec(query, comparisonList.UserId, comparisonList.TotalPrice,
 		comparisonList.Amount)
 	if err != nil {
 		return err
