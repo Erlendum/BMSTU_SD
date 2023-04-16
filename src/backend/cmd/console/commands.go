@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/howeyc/gopass"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -99,4 +100,170 @@ func Login(a *App) *models.User {
 	}
 
 	return user
+}
+
+func CreateInstrument(a *App, login string) {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	tmpInstrument := models.Instrument{}
+	fmt.Print("Input name: ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid name")
+		return
+	}
+	tmpInstrument.Name = scanner.Text()
+
+	fmt.Print("Input price:")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid price")
+		return
+	}
+	price, err := strconv.Atoi(scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid price")
+		return
+	}
+	tmpInstrument.Price = uint64(price)
+
+	fmt.Print("Input material: ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid material")
+		return
+	}
+	tmpInstrument.Material = scanner.Text()
+
+	fmt.Print("Input type: ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid type")
+		return
+	}
+	tmpInstrument.Type = scanner.Text()
+
+	fmt.Print("Input brand: ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid brand")
+		return
+	}
+	tmpInstrument.Brand = scanner.Text()
+
+	fmt.Print("Input Img: ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid Img")
+		return
+	}
+	tmpInstrument.Img = scanner.Text()
+
+	res := a.handlers.InstrumentHandler.Create(tmpInstrument, login)
+	if res == "0" {
+		fmt.Print("Success")
+	} else {
+		fmt.Print(res)
+	}
+}
+
+func DeleteInstrument(a *App, login string) {
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print("Input id:")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid id")
+		return
+	}
+	id, err := strconv.Atoi(scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid id")
+		return
+	}
+	res := a.handlers.InstrumentHandler.Delete(uint64(id), login)
+	if res == "0" {
+		fmt.Print("Success")
+	} else {
+		fmt.Print(res)
+	}
+}
+
+func UpdateInstrument(a *App, login string) {
+	fields := models.InstrumentFieldsToUpdate{}
+	scanner := bufio.NewScanner(os.Stdin)
+
+	fmt.Print("Input id:")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid id")
+		return
+	}
+	id, err := strconv.Atoi(scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid id")
+		return
+	}
+
+	fmt.Print("Input name to update (or press enter): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid name")
+		return
+	}
+	name := scanner.Text()
+	if name != "" {
+		fields[models.InstrumentFieldName] = name
+	}
+
+	fmt.Print("Input price (or press enter): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid price")
+		return
+	}
+	if scanner.Text() != "" {
+		price, err := strconv.Atoi(scanner.Text())
+		if err != nil {
+			fmt.Printf("Invalid price")
+			return
+		}
+		fields[models.InstrumentFieldPrice] = uint64(price)
+	}
+
+	fmt.Print("Input material (or press enter): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid material")
+		return
+	}
+	material := scanner.Text()
+	if material != "" {
+		fields[models.InstrumentFieldMaterial] = material
+	}
+
+	fmt.Print("Input type (or press enter): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid type")
+		return
+	}
+	typeI := scanner.Text()
+	if typeI != "" {
+		fields[models.InstrumentFieldType] = typeI
+	}
+
+	fmt.Print("Input brand (or press enter): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid brand")
+		return
+	}
+	brand := scanner.Text()
+	if brand != "" {
+		fields[models.InstrumentFieldBrand] = brand
+	}
+
+	fmt.Print("Input Img (or press enter): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid Img")
+		return
+	}
+	img := scanner.Text()
+	if img != "" {
+		fields[models.InstrumentFieldImg] = img
+	}
+
+	res := a.handlers.InstrumentHandler.Update(uint64(id), login, fields)
+	if res == "0" {
+		fmt.Print("Success")
+	} else {
+		fmt.Print(res)
+	}
 }

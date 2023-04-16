@@ -59,6 +59,9 @@ func (i *InstrumentPostgresRepository) instrumentFieldToDBField(field models.Ins
 }
 
 func (i *InstrumentPostgresRepository) Update(id uint64, fieldsToUpdate models.InstrumentFieldsToUpdate) error {
+	if len(fieldsToUpdate) == 0 {
+		return nil
+	}
 	updateFields := make(map[string]any, len(fieldsToUpdate))
 	for key, value := range fieldsToUpdate {
 		updateFields[i.instrumentFieldToDBField(key)] = value
@@ -70,6 +73,9 @@ func (i *InstrumentPostgresRepository) Update(id uint64, fieldsToUpdate models.I
 	query += ` where instrument_id = $` + strconv.Itoa(len(fields)) + ";"
 
 	res, err := i.db.Exec(query, fields...)
+	if err != nil {
+		return err
+	}
 	count, _ := res.RowsAffected()
 	if count == 0 || errors.Is(err, sql.ErrNoRows) {
 		return repositoryErrors.ObjectDoesNotExists

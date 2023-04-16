@@ -185,12 +185,15 @@ func (a *App) Run() {
 	}))
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(8, "Add instrument to Data Base", func() {
+		CreateInstrument(a, user.Login)
 	}))
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(9, "Delete instrument from Data Base", func() {
+		DeleteInstrument(a, user.Login)
 	}))
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(10, "Update instrument in Data Base", func() {
+		UpdateInstrument(a, user.Login)
 	}))
 	Menu.Display()
 }
