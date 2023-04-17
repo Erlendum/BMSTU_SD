@@ -45,8 +45,10 @@ func (d *discountServiceImplementation) Create(discount *models.Discount, login 
 				return nil
 			}
 		}
+	} else {
+		return d.discountRepository.Create(discount)
 	}
-	return d.discountRepository.Create(discount)
+	return nil
 }
 
 func (d *discountServiceImplementation) Update(id uint64, login string, fieldsToUpdate models.DiscountFieldsToUpdate) error {

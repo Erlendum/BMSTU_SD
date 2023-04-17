@@ -38,3 +38,18 @@ func (h *UserHandler) Get(login, password string) (*models.User, string) {
 	}
 	return user, Response(e)
 }
+
+func (h *UserHandler) GetComparisonList(id uint64) string {
+	comparisonList, instruments, err := h.service.GetComparisonList(id)
+	if err != nil {
+		log.Println(err)
+		return ErrorResponse(&ErrorModel{
+			Error: err.Error(),
+		})
+	}
+	structure := make(map[string]any)
+	structure["comparisonList"] = comparisonList
+	structure["instruments"] = instruments
+
+	return MapResponse(structure)
+}

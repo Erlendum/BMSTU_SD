@@ -11,13 +11,15 @@ type HandlersServicesFields struct {
 }
 
 type Handlers struct {
-	InstrumentHandler *InstrumentHandler
-	UserHandler       *UserHandler
-	DiscountHandler   *DiscountHandler
+	InstrumentHandler     *InstrumentHandler
+	UserHandler           *UserHandler
+	DiscountHandler       *DiscountHandler
+	ComparisonListHandler *ComparisonListHandler
 }
 
 func NewHandlers(services HandlersServicesFields) *Handlers {
 	return &Handlers{InstrumentHandler: NewInstrumentHandler(services.InstrumentService),
-		UserHandler:     NewUserHandler(services.UserService),
-		DiscountHandler: NewDiscountHandler(services.DiscountService)}
+		UserHandler:           NewUserHandler(services.UserService),
+		DiscountHandler:       NewDiscountHandler(services.DiscountService),
+		ComparisonListHandler: NewComparisonListHandler(services.ComparisonListService)}
 }

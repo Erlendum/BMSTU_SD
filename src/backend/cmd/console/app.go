@@ -178,13 +178,16 @@ func (a *App) Run() {
 	Menu.AddMenuItem(GoConsoleMenu.NewSubmenuItem(4, "Discounts List", discountSubMenu))
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(5, "Comparison List", func() {
-
+		comparisonList := a.handlers.UserHandler.GetComparisonList(user.UserId)
+		fmt.Println(comparisonList)
 	}))
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(6, "Add instrument to Comparison List", func() {
+		AddInstrumentToComparisonList(a, user.UserId)
 	}))
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(7, "Delete instrument from Comparison List", func() {
+		DeleteInstrumentFromComparisonList(a, user.UserId)
 	}))
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(8, "Add instrument to Data Base", func() {
@@ -200,15 +203,22 @@ func (a *App) Run() {
 	}))
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(11, "Add discount in Data Base", func() {
-
+		CreateDiscount(a, user.Login)
 	}))
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(12, "Delete discount from Data Base", func() {
-
+		DeleteDiscount(a, user.Login)
 	}))
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(13, "Update discount in Data Base", func() {
-
+		UpdateDiscount(a, user.Login)
 	}))
+
+	//defer func() {
+	//	if err := recover(); err != nil {
+	//		log.Println("Invalid menu option")
+	//	}
+	//}()
+
 	Menu.Display()
 }

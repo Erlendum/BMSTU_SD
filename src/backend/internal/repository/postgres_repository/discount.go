@@ -73,6 +73,9 @@ func (i *DiscountPostgresRepository) Update(id uint64, fieldsToUpdate models.Dis
 	query += ` where discount_id = $` + strconv.Itoa(len(fields)) + ";"
 
 	res, err := i.db.Exec(query, fields...)
+	if err != nil {
+		return err
+	}
 	count, _ := res.RowsAffected()
 	if count == 0 || errors.Is(err, sql.ErrNoRows) {
 		return repositoryErrors.ObjectDoesNotExists

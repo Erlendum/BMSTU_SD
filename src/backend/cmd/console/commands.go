@@ -267,3 +267,266 @@ func UpdateInstrument(a *App, login string) {
 		fmt.Print(res)
 	}
 }
+
+func AddInstrumentToComparisonList(a *App, userId uint64) {
+	scanner := bufio.NewScanner(os.Stdin)
+	comparisonList, _, err := a.services.UserService.GetComparisonList(userId)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	comparisonListId := comparisonList.ComparisonListId
+
+	fmt.Print("Input instrument id:")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid id")
+		return
+	}
+
+	id, err := strconv.Atoi(scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid id")
+		return
+	}
+
+	res := a.handlers.ComparisonListHandler.AddInstrument(comparisonListId, uint64(id))
+	if res == "0" {
+		fmt.Print("Success")
+	} else {
+		fmt.Print(res)
+	}
+}
+
+func DeleteInstrumentFromComparisonList(a *App, userId uint64) {
+	scanner := bufio.NewScanner(os.Stdin)
+	comparisonList, _, err := a.services.UserService.GetComparisonList(userId)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	comparisonListId := comparisonList.ComparisonListId
+
+	fmt.Print("Input instrument id:")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid id")
+		return
+	}
+
+	id, err := strconv.Atoi(scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid id")
+		return
+	}
+
+	res := a.handlers.ComparisonListHandler.DeleteInstrument(comparisonListId, uint64(id))
+	if res == "0" {
+		fmt.Print("Success")
+	} else {
+		fmt.Print(res)
+	}
+}
+
+func CreateDiscount(a *App, login string) {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	tmpDiscount := models.Discount{}
+
+	fmt.Print("Input instrument id:")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid instrument id")
+		return
+	}
+	instrumentId, err := strconv.Atoi(scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid instrument id")
+		return
+	}
+	tmpDiscount.InstrumentId = uint64(instrumentId)
+
+	fmt.Print("Input user id:")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid user id")
+		return
+	}
+	userId, err := strconv.Atoi(scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid user id")
+		return
+	}
+	tmpDiscount.UserId = uint64(userId)
+
+	fmt.Print("Input amount:")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid amount")
+		return
+	}
+	amount, err := strconv.Atoi(scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid amount")
+		return
+	}
+	tmpDiscount.Amount = uint64(amount)
+
+	fmt.Print("Input type: ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid type")
+		return
+	}
+	tmpDiscount.Type = scanner.Text()
+
+	layOut := "2006-01-02"
+	fmt.Print("Input begin date (format: year-month-day): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid begin date")
+		return
+	}
+	dateBegin, err := time.Parse(layOut, scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid begin date")
+		return
+	}
+	tmpDiscount.DateBegin = dateBegin
+
+	fmt.Print("Input end date (format: year-month-day): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid end date")
+		return
+	}
+	dateEnd, err := time.Parse(layOut, scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid end date")
+		return
+	}
+	tmpDiscount.DateEnd = dateEnd
+
+	res := a.handlers.DiscountHandler.Create(tmpDiscount, login)
+	if res == "0" {
+		fmt.Print("Success")
+	} else {
+		fmt.Print(res)
+	}
+}
+
+func DeleteDiscount(a *App, login string) {
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Print("Input id:")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid id")
+		return
+	}
+	id, err := strconv.Atoi(scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid id")
+		return
+	}
+	res := a.handlers.DiscountHandler.Delete(uint64(id), login)
+	if res == "0" {
+		fmt.Print("Success")
+	} else {
+		fmt.Print(res)
+	}
+}
+
+func UpdateDiscount(a *App, login string) {
+	fields := models.DiscountFieldsToUpdate{}
+	scanner := bufio.NewScanner(os.Stdin)
+
+	fmt.Print("Input id:")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid id")
+		return
+	}
+	id, err := strconv.Atoi(scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid id")
+		return
+	}
+
+	fmt.Print("Input instrument id (or press enter): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid instrument id")
+		return
+	}
+	if scanner.Text() != "" {
+		instrumentId, err := strconv.Atoi(scanner.Text())
+		if err != nil {
+			fmt.Printf("Invalid instrument id")
+			return
+		}
+		fields[models.DiscountFieldInstrumentId] = uint64(instrumentId)
+	}
+
+	fmt.Print("Input user id (or press enter): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid user id")
+		return
+	}
+	if scanner.Text() != "" {
+		userId, err := strconv.Atoi(scanner.Text())
+		if err != nil {
+			fmt.Printf("Invalid user id")
+			return
+		}
+		fields[models.DiscountFieldUserId] = uint64(userId)
+	}
+
+	fmt.Print("Input amount (or press enter): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid amount")
+		return
+	}
+	if scanner.Text() != "" {
+		amount, err := strconv.Atoi(scanner.Text())
+		if err != nil {
+			fmt.Printf("Invalid amount")
+			return
+		}
+		fields[models.DiscountFieldAmount] = uint64(amount)
+	}
+
+	fmt.Print("Input type (or press enter): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid type")
+		return
+	}
+	typeD := scanner.Text()
+	if typeD != "" {
+		fields[models.DiscountFieldType] = typeD
+	}
+
+	layOut := "2006-01-02"
+	fmt.Print("Input begin date (format: year-month-day): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid begin date")
+		return
+	}
+	if scanner.Text() != "" {
+		dateBegin, err := time.Parse(layOut, scanner.Text())
+		if err != nil {
+			fmt.Printf("Invalid begin date")
+			return
+		}
+		fields[models.DiscountFieldDateBegin] = dateBegin
+	}
+
+	fmt.Print("Input end date (format: year-month-day): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid end date")
+		return
+	}
+	if scanner.Text() != "" {
+		dateEnd, err := time.Parse(layOut, scanner.Text())
+		if err != nil {
+			fmt.Printf("Invalid end date")
+			return
+		}
+		fields[models.DiscountFieldDateEnd] = dateEnd
+	}
+
+	res := a.handlers.DiscountHandler.Update(uint64(id), login, fields)
+	if res == "0" {
+		fmt.Print("Success")
+	} else {
+		fmt.Print(res)
+	}
+}
