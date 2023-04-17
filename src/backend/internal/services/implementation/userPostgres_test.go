@@ -57,7 +57,7 @@ var testGetComparisonListPostgresSuccess = []struct {
 		}{id: 1},
 		CheckOutput: func(t *testing.T, err error, comparisonList *models.ComparisonList, instruments []models.Instrument) {
 			require.NoError(t, err)
-			require.Equal(t, comparisonList, &models.ComparisonList{ComparisonListId: 1, UserId: 1, Amount: 0, TotalPrice: 0})
+			require.Equal(t, comparisonList, &models.ComparisonList{ComparisonListId: 1, UserId: 1, Amount: 1, TotalPrice: 4050})
 			require.Equal(t, instruments, []models.Instrument{{
 				InstrumentId: 1,
 				Name:         "KALA KA-15S Kala Mahogany Soprano Ukulele No Binding",

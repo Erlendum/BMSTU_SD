@@ -92,6 +92,9 @@ func (a *App) Run() {
 			menu.ShowMenuItem(8)
 			menu.ShowMenuItem(9)
 			menu.ShowMenuItem(10)
+			menu.ShowMenuItem(11)
+			menu.ShowMenuItem(12)
+			menu.ShowMenuItem(13)
 		}
 	})
 	Menu.AddMenuItem(GoConsoleMenu.NewActionItem(0, "Exit menu", func() {}).SetAsExitOption())
@@ -194,6 +197,18 @@ func (a *App) Run() {
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(10, "Update instrument in Data Base", func() {
 		UpdateInstrument(a, user.Login)
+	}))
+
+	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(11, "Add discount in Data Base", func() {
+
+	}))
+
+	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(12, "Delete discount from Data Base", func() {
+
+	}))
+
+	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(13, "Update discount in Data Base", func() {
+
 	}))
 	Menu.Display()
 }

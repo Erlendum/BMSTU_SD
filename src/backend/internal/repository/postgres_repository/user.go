@@ -78,3 +78,26 @@ func (i *UserPostgresRepository) GetById(id uint64) (*models.User, error) {
 
 	return user, nil
 }
+
+func (i *UserPostgresRepository) GetList() ([]models.User, error) {
+	query := `select * from store.users order by user_id;`
+
+	var usersPostgres []UserPostgres
+	var users []models.User
+	err := i.db.Select(&usersPostgres, query)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, repositoryErrors.ObjectDoesNotExists
+	} else if err != nil {
+		return nil, err
+	}
+
+	for i := range usersPostgres {
+		user := &models.User{}
+		err = copier.Copy(user, &usersPostgres[i])
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, *user)
+	}
+	return users, nil
+}

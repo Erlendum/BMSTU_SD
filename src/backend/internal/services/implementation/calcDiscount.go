@@ -47,6 +47,11 @@ func (c *calcDiscountServiceImplementation) CalcDiscount(user *models.User, inst
 			switch elems[0] {
 			case PERCENT, BIRTH:
 				if dateNow.Before(discount.DateEnd) && dateNow.After(discount.DateBegin) && discount.Amount > maxPercent {
+					_, m1, d1 := dateNow.Date()
+					_, m2, d2 := discount.DateBegin.Date()
+					if elems[0] == BIRTH && (m1 != m2 || d1 != d2) {
+						continue
+					}
 					maxPercent = discount.Amount
 				}
 			case MALE, FEMALE:

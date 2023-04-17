@@ -47,6 +47,7 @@ var testDiscountCreateSuccess = []struct {
 		Prepare: func(fields *discountServiceFields) {
 			fields.userRepositoryMock.EXPECT().Get("login1").Return(&models.User{IsAdmin: true}, nil)
 			fields.discountRepositoryMock.EXPECT().Create(&models.Discount{DiscountId: 1}).Return(nil)
+			fields.userRepositoryMock.EXPECT().GetList().Return(nil, nil)
 		},
 		CheckOutput: func(t *testing.T, err error) {
 			require.NoError(t, err)

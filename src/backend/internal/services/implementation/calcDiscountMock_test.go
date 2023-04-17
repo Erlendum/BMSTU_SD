@@ -44,7 +44,7 @@ var testCalcDiscountSuccess = []struct {
 		}{user: &models.User{UserId: 1}, instruments: []models.Instrument{{InstrumentId: 1, Price: 100}}},
 		Prepare: func(fields *calcDiscountServiceFields) {
 			fields.discountRepositoryMock.EXPECT().GetSpecificList(uint64(1), uint64(1)).Return(
-				[]models.Discount{{InstrumentId: 1, UserId: 1, Type: "Процентная", Amount: 10, DateBegin: time.Now(), DateEnd: time.Now().AddDate(0, 1, 1)}}, nil)
+				[]models.Discount{{InstrumentId: 1, UserId: 1, Type: "Процентная", Amount: 10, DateBegin: time.Now().AddDate(0, 0, -1), DateEnd: time.Now().AddDate(0, 1, 1)}}, nil)
 		},
 		CheckOutput: func(t *testing.T, instruments []models.Instrument, err error) {
 			require.NoError(t, err)
@@ -65,7 +65,7 @@ var testCalcDiscountSuccess = []struct {
 		},
 		CheckOutput: func(t *testing.T, instruments []models.Instrument, err error) {
 			require.NoError(t, err)
-			require.Equal(t, instruments, []models.Instrument{{InstrumentId: 1, Price: 70}})
+			require.Equal(t, instruments, []models.Instrument{{InstrumentId: 1, Price: 80}})
 		},
 	},
 	{
@@ -100,7 +100,7 @@ var testCalcDiscountSuccess = []struct {
 		},
 		CheckOutput: func(t *testing.T, instruments []models.Instrument, err error) {
 			require.NoError(t, err)
-			require.Equal(t, instruments, []models.Instrument{{InstrumentId: 1, Price: 70}})
+			require.Equal(t, instruments, []models.Instrument{{InstrumentId: 1, Price: 79}})
 		},
 	},
 	{

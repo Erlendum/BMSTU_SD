@@ -120,3 +120,17 @@ func (mr *MockComparisonListRepositoryMockRecorder) GetUser(id interface{}) *gom
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockComparisonListRepository)(nil).GetUser), id)
 }
+
+// Update mocks base method.
+func (m *MockComparisonListRepository) Update(id uint64, fieldsToUpdate models.ComparisonListFieldsToUpdate) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", id, fieldsToUpdate)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockComparisonListRepositoryMockRecorder) Update(id, fieldsToUpdate interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockDiscountRepository)(nil).Update), id, fieldsToUpdate)
+}

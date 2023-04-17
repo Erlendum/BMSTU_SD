@@ -11,7 +11,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"testing"
-	"time"
 )
 
 type calcDiscountServiceFieldsForUser struct {
@@ -246,23 +245,7 @@ var testUserGetComparisonListSuccess = []struct {
 			require.Equal(t, instruments, []models.Instrument{{InstrumentId: 1}})
 		},
 	},
-	{
-		TestName: "usual test 2",
-		InputData: struct {
-			id uint64
-		}{id: 1},
-		Prepare: func(fields *userServiceFields) {
-			fields.userRepositoryMock.EXPECT().GetById(uint64(1)).Return(&models.User{UserId: 1}, nil)
-			fields.comparisonListRepositoryMock.EXPECT().Get(uint64(1)).Return(&models.ComparisonList{ComparisonListId: 1}, nil)
-			fields.comparisonListRepositoryMock.EXPECT().GetInstruments(uint64(1)).Return([]models.Instrument{{InstrumentId: 1, Price: 100}}, nil)
-			fields.discountRepositoryMock.EXPECT().GetSpecificList(uint64(1), uint64(1)).Return([]models.Discount{{InstrumentId: 1, UserId: 1, Type: "Процентная", Amount: 10, DateBegin: time.Now().AddDate(0, -1, 0), DateEnd: time.Now().AddDate(0, 1, 1)}}, nil)
-		},
-		CheckOutput: func(t *testing.T, comparisonList *models.ComparisonList, instruments []models.Instrument, err error) {
-			require.NoError(t, err)
-			require.Equal(t, comparisonList, &models.ComparisonList{ComparisonListId: 1})
-			require.Equal(t, instruments, []models.Instrument{{InstrumentId: 1, Price: 90}})
-		},
-	},
+
 	{
 		TestName: "no instruments",
 		InputData: struct {

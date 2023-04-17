@@ -98,5 +98,27 @@ func (u *userServiceImplementation) GetComparisonList(id uint64) (*models.Compar
 		return nil, nil, err
 	}
 
+	var totalPrice uint64
+	for i := range instruments {
+		totalPrice += instruments[i].Price
+	}
+
+	fields := models.ComparisonListFieldsToUpdate{}
+
+	fields[models.ComparisonListFieldTotalPrice] = totalPrice
+	fields[models.ComparisonListFieldAmount] = len(instruments)
+
+	err = u.comparisonListRepository.Update(comparisonList.ComparisonListId, fields)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	comparisonList, err = u.comparisonListRepository.Get(id)
+	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
+		return nil, nil, serviceErrors.ComparisonListDoesNotExists
+	} else if err != nil {
+		return nil, nil, err
+	}
+
 	return comparisonList, instruments, nil
 }

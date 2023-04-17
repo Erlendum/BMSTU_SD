@@ -5,8 +5,8 @@ type ComparisonListFieldsToUpdate map[ComparisonListField]any
 
 const (
 	ComparisonListFieldUserId = ComparisonListField(iota)
-	ComparisonListTotalPrice
-	ComparisonListAmount
+	ComparisonListFieldTotalPrice
+	ComparisonListFieldAmount
 )
 
 type ComparisonList struct {

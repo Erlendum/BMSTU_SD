@@ -3,11 +3,13 @@ package postgres_repository
 import (
 	"backend/internal/models"
 	"backend/internal/pkg/errors/repositoryErrors"
+	"backend/internal/pkg/queries"
 	"backend/internal/repository"
 	"database/sql"
 	"errors"
 	"github.com/jinzhu/copier"
 	"github.com/jmoiron/sqlx"
+	"strconv"
 )
 
 type ComparisonListPostgres struct {
@@ -125,4 +127,40 @@ func (i *ComparisonListPostgresRepository) GetInstruments(userId uint64) ([]mode
 		instruments = append(instruments, *instrument)
 	}
 	return instruments, nil
+}
+
+func (i *ComparisonListPostgresRepository) comparisonListFieldToDBField(field models.ComparisonListField) string {
+	switch field {
+	case models.ComparisonListFieldUserId:
+		return "comparisonList_user_id"
+	case models.ComparisonListFieldTotalPrice:
+		return "comparisonList_total_price"
+	case models.ComparisonListFieldAmount:
+		return "comparisonList_amount"
+	}
+	return ""
+}
+
+func (i *ComparisonListPostgresRepository) Update(id uint64, fieldsToUpdate models.ComparisonListFieldsToUpdate) error {
+	updateFields := make(map[string]any, len(fieldsToUpdate))
+	for key, value := range fieldsToUpdate {
+		updateFields[i.comparisonListFieldToDBField(key)] = value
+	}
+
+	query, fields := queries.CreateUpdateQuery("store.comparisonLists", updateFields)
+
+	fields = append(fields, id)
+	query += ` where comparisonList_id = $` + strconv.Itoa(len(fields)) + ";"
+
+	res, err := i.db.Exec(query, fields...)
+	if err != nil {
+		return err
+	}
+	count, _ := res.RowsAffected()
+	if count == 0 || errors.Is(err, sql.ErrNoRows) {
+		return repositoryErrors.ObjectDoesNotExists
+	} else if err != nil {
+		return err
+	}
+	return nil
 }
