@@ -103,7 +103,7 @@ func (i *ComparisonListPostgresRepository) GetUser(id uint64) (*models.User, err
 }
 
 func (i *ComparisonListPostgresRepository) GetInstruments(userId uint64) ([]models.Instrument, error) {
-	query := `select distinct i.instrument_id, instrument_name, instrument_price, instrument_material,
+	query := `select i.instrument_id, instrument_name, instrument_price, instrument_material,
        instrument_type, instrument_brand, instrument_img
 			  from (store.comparisonlists c join store.comparisonlists_instruments ci on c.comparisonlist_id = ci.comparisonlist_id) as t1
    			  join store.instruments i on t1.instrument_id = i.instrument_id

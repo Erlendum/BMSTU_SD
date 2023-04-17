@@ -43,11 +43,10 @@ var testDiscountCreateSuccess = []struct {
 		InputData: struct {
 			discount *models.Discount
 			login    string
-		}{discount: &models.Discount{DiscountId: 1}, login: "login1"},
+		}{discount: &models.Discount{DiscountId: 1, UserId: 1}, login: "login1"},
 		Prepare: func(fields *discountServiceFields) {
 			fields.userRepositoryMock.EXPECT().Get("login1").Return(&models.User{IsAdmin: true}, nil)
-			fields.discountRepositoryMock.EXPECT().Create(&models.Discount{DiscountId: 1}).Return(nil)
-			fields.userRepositoryMock.EXPECT().GetList().Return(nil, nil)
+			fields.discountRepositoryMock.EXPECT().Create(&models.Discount{DiscountId: 1, UserId: 1}).Return(nil)
 		},
 		CheckOutput: func(t *testing.T, err error) {
 			require.NoError(t, err)
