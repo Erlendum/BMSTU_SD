@@ -40,22 +40,22 @@ func (i *InstrumentPostgresRepository) Create(instrument *models.Instrument) err
 	return nil
 }
 
-func (i *InstrumentPostgresRepository) instrumentFieldToDBField(field models.InstrumentField) string {
+func (i *InstrumentPostgresRepository) instrumentFieldToDBField(field models.InstrumentField) (string, error) {
 	switch field {
 	case models.InstrumentFieldName:
-		return "instrument_name"
+		return "instrument_name", nil
 	case models.InstrumentFieldPrice:
-		return "instrument_price"
+		return "instrument_price", nil
 	case models.InstrumentFieldMaterial:
-		return "instrument_material"
+		return "instrument_material", nil
 	case models.InstrumentFieldType:
-		return "instrument_type"
+		return "instrument_type", nil
 	case models.InstrumentFieldBrand:
-		return "instrument_brand"
+		return "instrument_brand", nil
 	case models.InstrumentFieldImg:
-		return "instrument_img"
+		return "instrument_img", nil
 	}
-	return ""
+	return "", repositoryErrors.InvalidField
 }
 
 func (i *InstrumentPostgresRepository) Update(id uint64, fieldsToUpdate models.InstrumentFieldsToUpdate) error {
@@ -64,7 +64,11 @@ func (i *InstrumentPostgresRepository) Update(id uint64, fieldsToUpdate models.I
 	}
 	updateFields := make(map[string]any, len(fieldsToUpdate))
 	for key, value := range fieldsToUpdate {
-		updateFields[i.instrumentFieldToDBField(key)] = value
+		field, err := i.instrumentFieldToDBField(key)
+		if err != nil {
+			return err
+		}
+		updateFields[field] = value
 	}
 
 	query, fields := queries.CreateUpdateQuery("store.instruments", updateFields)

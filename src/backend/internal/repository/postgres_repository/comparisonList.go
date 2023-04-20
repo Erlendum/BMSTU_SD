@@ -129,22 +129,26 @@ func (i *ComparisonListPostgresRepository) GetInstruments(userId uint64) ([]mode
 	return instruments, nil
 }
 
-func (i *ComparisonListPostgresRepository) comparisonListFieldToDBField(field models.ComparisonListField) string {
+func (i *ComparisonListPostgresRepository) comparisonListFieldToDBField(field models.ComparisonListField) (string, error) {
 	switch field {
 	case models.ComparisonListFieldUserId:
-		return "comparisonList_user_id"
+		return "comparisonList_user_id", nil
 	case models.ComparisonListFieldTotalPrice:
-		return "comparisonList_total_price"
+		return "comparisonList_total_price", nil
 	case models.ComparisonListFieldAmount:
-		return "comparisonList_amount"
+		return "comparisonList_amount", nil
 	}
-	return ""
+	return "", repositoryErrors.InvalidField
 }
 
 func (i *ComparisonListPostgresRepository) Update(id uint64, fieldsToUpdate models.ComparisonListFieldsToUpdate) error {
 	updateFields := make(map[string]any, len(fieldsToUpdate))
 	for key, value := range fieldsToUpdate {
-		updateFields[i.comparisonListFieldToDBField(key)] = value
+		field, err := i.comparisonListFieldToDBField(key)
+		if err != nil {
+			return err
+		}
+		updateFields[field] = value
 	}
 
 	query, fields := queries.CreateUpdateQuery("store.comparisonLists", updateFields)

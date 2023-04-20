@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	PERCENT     = "Процентная"
-	BIRTH       = "Именинная"
-	MALE        = "Мужской"
-	FEMALE      = "Женский"
-	GIFT        = "Подарочная"
+	PERCENT     = "Percent"
+	BIRTH       = "Birth"
+	MALE        = "Male"
+	FEMALE      = "Female"
+	GIFT        = "Gift"
 	GiftNumElem = 3
 )
 
@@ -45,13 +45,12 @@ func (c *calcDiscountServiceImplementation) CalcDiscount(user *models.User, inst
 		for _, discount := range discounts {
 			elems := strings.Split(discount.Type, " ")
 			switch elems[0] {
-			case PERCENT, BIRTH:
+			case PERCENT:
 				if dateNow.Before(discount.DateEnd) && dateNow.After(discount.DateBegin) && discount.Amount > maxPercent {
-					_, m1, d1 := dateNow.Date()
-					_, m2, d2 := discount.DateBegin.Date()
-					if elems[0] == BIRTH && (m1 != m2 || d1 != d2) {
-						continue
-					}
+					maxPercent = discount.Amount
+				}
+			case BIRTH:
+				if dateNow.Day() == user.DateBirth.Day() && dateNow.Month() == user.DateBirth.Month() {
 					maxPercent = discount.Amount
 				}
 			case MALE, FEMALE:

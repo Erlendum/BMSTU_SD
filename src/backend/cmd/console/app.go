@@ -206,11 +206,15 @@ func (a *App) Run() {
 		CreateDiscount(a, user.Login)
 	}))
 
-	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(12, "Delete discount from Data Base", func() {
+	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(12, "Add discount for all users in Data Base", func() {
+		CreateDiscountForAllUsers(a, user.Login)
+	}))
+
+	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(13, "Delete discount from Data Base", func() {
 		DeleteDiscount(a, user.Login)
 	}))
 
-	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(13, "Update discount in Data Base", func() {
+	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(14, "Update discount in Data Base", func() {
 		UpdateDiscount(a, user.Login)
 	}))
 

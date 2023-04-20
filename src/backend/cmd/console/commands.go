@@ -43,7 +43,7 @@ func Register(a *App) {
 		return
 	}
 	var gender models.UserGender
-	if scanner.Text() == "Мужской" || scanner.Text() == "Женский" {
+	if scanner.Text() == "Male" || scanner.Text() == "Woman" {
 		gender = models.UserGender(scanner.Text())
 		tmpUser.Gender = gender
 	} else {
@@ -400,6 +400,75 @@ func CreateDiscount(a *App, login string) {
 	tmpDiscount.DateEnd = dateEnd
 
 	res := a.handlers.DiscountHandler.Create(tmpDiscount, login)
+	if res == "0" {
+		fmt.Print("Success")
+	} else {
+		fmt.Print(res)
+	}
+}
+
+func CreateDiscountForAllUsers(a *App, login string) {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	tmpDiscount := models.Discount{}
+
+	fmt.Print("Input instrument id:")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid instrument id")
+		return
+	}
+	instrumentId, err := strconv.Atoi(scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid instrument id")
+		return
+	}
+	tmpDiscount.InstrumentId = uint64(instrumentId)
+
+	fmt.Print("Input amount:")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid amount")
+		return
+	}
+	amount, err := strconv.Atoi(scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid amount")
+		return
+	}
+	tmpDiscount.Amount = uint64(amount)
+
+	fmt.Print("Input type: ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid type")
+		return
+	}
+	tmpDiscount.Type = scanner.Text()
+
+	layOut := "2006-01-02"
+	fmt.Print("Input begin date (format: year-month-day): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid begin date")
+		return
+	}
+	dateBegin, err := time.Parse(layOut, scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid begin date")
+		return
+	}
+	tmpDiscount.DateBegin = dateBegin
+
+	fmt.Print("Input end date (format: year-month-day): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid end date")
+		return
+	}
+	dateEnd, err := time.Parse(layOut, scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid end date")
+		return
+	}
+	tmpDiscount.DateEnd = dateEnd
+
+	res := a.handlers.DiscountHandler.CreateForAll(tmpDiscount, login)
 	if res == "0" {
 		fmt.Print("Success")
 	} else {

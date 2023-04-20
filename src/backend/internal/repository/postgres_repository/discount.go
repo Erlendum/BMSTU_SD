@@ -43,28 +43,32 @@ func (i *DiscountPostgresRepository) Create(discount *models.Discount) error {
 	return nil
 }
 
-func (i *DiscountPostgresRepository) discountFieldToDBField(field models.DiscountField) string {
+func (i *DiscountPostgresRepository) discountFieldToDBField(field models.DiscountField) (string, error) {
 	switch field {
 	case models.DiscountFieldInstrumentId:
-		return "instrument_id"
+		return "instrument_id", nil
 	case models.DiscountFieldUserId:
-		return "user_id"
+		return "user_id", nil
 	case models.DiscountFieldAmount:
-		return "discount_amount"
+		return "discount_amount", nil
 	case models.DiscountFieldType:
-		return "discount_type"
+		return "discount_type", nil
 	case models.DiscountFieldDateBegin:
-		return "discount_date_begin"
+		return "discount_date_begin", nil
 	case models.DiscountFieldDateEnd:
-		return "discount_date_end"
+		return "discount_date_end", nil
 	}
-	return ""
+	return "", repositoryErrors.InvalidField
 }
 
 func (i *DiscountPostgresRepository) Update(id uint64, fieldsToUpdate models.DiscountFieldsToUpdate) error {
 	updateFields := make(map[string]any, len(fieldsToUpdate))
 	for key, value := range fieldsToUpdate {
-		updateFields[i.discountFieldToDBField(key)] = value
+		field, err := i.discountFieldToDBField(key)
+		if err != nil {
+			return err
+		}
+		updateFields[field] = value
 	}
 
 	query, fields := queries.CreateUpdateQuery("store.discounts", updateFields)

@@ -32,22 +32,34 @@ func (d *discountServiceImplementation) Create(discount *models.Discount, login 
 		return serviceErrors.UserCanNotCreateDiscount
 	}
 
-	if discount.UserId == 0 {
-		users, err := d.userRepository.GetList()
-		if err != nil {
-			return err
-		}
-		for i := range users {
-			userId := users[i].UserId
-			discount.UserId = userId
-			err = d.discountRepository.Create(discount)
-			if err != nil {
-				return nil
-			}
-		}
-	} else {
-		return d.discountRepository.Create(discount)
+	return d.discountRepository.Create(discount)
+}
+
+func (d *discountServiceImplementation) CreateForAll(discount *models.Discount, login string) error {
+	user, err := d.userRepository.Get(login)
+	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
+		return serviceErrors.UserDoesNotExists
+	} else if err != nil {
+		return err
 	}
+
+	if !user.IsAdmin {
+		return serviceErrors.UserCanNotCreateDiscount
+	}
+
+	users, err := d.userRepository.GetList()
+	if err != nil {
+		return err
+	}
+	for i := range users {
+		userId := users[i].UserId
+		discount.UserId = userId
+		err = d.discountRepository.Create(discount)
+		if err != nil {
+			return nil
+		}
+	}
+
 	return nil
 }
 

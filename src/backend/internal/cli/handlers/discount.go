@@ -48,6 +48,19 @@ func (h *DiscountHandler) Create(discount models.Discount, login string) string 
 	return Response(e)
 }
 
+func (h *DiscountHandler) CreateForAll(discount models.Discount, login string) string {
+	e := 0
+	err := h.service.CreateForAll(&discount, login)
+	if err != nil {
+		log.Println(err)
+		return ErrorResponse(&ErrorModel{
+			Error: err.Error(),
+		})
+	}
+
+	return Response(e)
+}
+
 func (h *DiscountHandler) Delete(id uint64, login string) string {
 	e := 0
 	err := h.service.Delete(id, login)

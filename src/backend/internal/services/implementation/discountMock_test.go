@@ -162,11 +162,11 @@ var testDiscountUpdateSuccess = []struct {
 			discountId     uint64
 			login          string
 			fieldsToUpdate models.DiscountFieldsToUpdate
-		}{discountId: 1, login: "login1", fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldType: "Процентная"}},
+		}{discountId: 1, login: "login1", fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldType: "Percent"}},
 		Prepare: func(fields *discountServiceFields) {
 			fields.userRepositoryMock.EXPECT().Get("login1").Return(&models.User{IsAdmin: true}, nil)
 			fields.discountRepositoryMock.EXPECT().Get(uint64(1)).Return(&models.Discount{DiscountId: 1}, nil)
-			fields.discountRepositoryMock.EXPECT().Update(uint64(1), map[models.DiscountField]any{models.DiscountFieldType: "Процентная"}).Return(nil)
+			fields.discountRepositoryMock.EXPECT().Update(uint64(1), map[models.DiscountField]any{models.DiscountFieldType: "Percent"}).Return(nil)
 		},
 		CheckOutput: func(t *testing.T, err error) {
 			require.NoError(t, err)
@@ -190,7 +190,7 @@ var testDiscountUpdateFailed = []struct {
 			discountId     uint64
 			login          string
 			fieldsToUpdate models.DiscountFieldsToUpdate
-		}{discountId: 1, login: "login1", fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldType: "Процентная"}},
+		}{discountId: 1, login: "login1", fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldType: "Percent"}},
 		Prepare: func(fields *discountServiceFields) {
 			fields.userRepositoryMock.EXPECT().Get("login1").Return(nil, repositoryErrors.ObjectDoesNotExists)
 			fields.discountRepositoryMock.EXPECT().Get(uint64(1)).Return(&models.Discount{DiscountId: 1}, nil)
@@ -205,7 +205,7 @@ var testDiscountUpdateFailed = []struct {
 			discountId     uint64
 			login          string
 			fieldsToUpdate models.DiscountFieldsToUpdate
-		}{discountId: 1, login: "login1", fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldType: "Процентная"}},
+		}{discountId: 1, login: "login1", fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldType: "Percent"}},
 		Prepare: func(fields *discountServiceFields) {
 			fields.userRepositoryMock.EXPECT().Get("login1").Return(nil, repositoryErrors.InternalRepositoryError)
 			fields.discountRepositoryMock.EXPECT().Get(uint64(1)).Return(&models.Discount{DiscountId: 1}, nil)
@@ -220,7 +220,7 @@ var testDiscountUpdateFailed = []struct {
 			discountId     uint64
 			login          string
 			fieldsToUpdate models.DiscountFieldsToUpdate
-		}{discountId: 1, login: "login1", fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldType: "Процентная"}},
+		}{discountId: 1, login: "login1", fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldType: "Percent"}},
 		Prepare: func(fields *discountServiceFields) {
 			fields.discountRepositoryMock.EXPECT().Get(uint64(1)).Return(nil, repositoryErrors.ObjectDoesNotExists)
 		},
@@ -234,7 +234,7 @@ var testDiscountUpdateFailed = []struct {
 			discountId     uint64
 			login          string
 			fieldsToUpdate models.DiscountFieldsToUpdate
-		}{discountId: 1, login: "login1", fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldType: "Процентная"}},
+		}{discountId: 1, login: "login1", fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldType: "Percent"}},
 		Prepare: func(fields *discountServiceFields) {
 			fields.discountRepositoryMock.EXPECT().Get(uint64(1)).Return(nil, repositoryErrors.InternalRepositoryError)
 		},
@@ -248,7 +248,7 @@ var testDiscountUpdateFailed = []struct {
 			discountId     uint64
 			login          string
 			fieldsToUpdate models.DiscountFieldsToUpdate
-		}{discountId: 1, login: "login1", fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldType: "Процентная"}},
+		}{discountId: 1, login: "login1", fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldType: "Percent"}},
 		Prepare: func(fields *discountServiceFields) {
 			fields.discountRepositoryMock.EXPECT().Get(uint64(1)).Return(&models.Discount{DiscountId: 1}, nil)
 			fields.userRepositoryMock.EXPECT().Get("login1").Return(&models.User{IsAdmin: false}, nil)

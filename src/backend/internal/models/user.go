@@ -16,8 +16,8 @@ const (
 type UserGender string
 
 const (
-	MaleUserGender   = UserGender("Мужской")
-	FemaleUserGender = UserGender("Женский")
+	MaleUserGender   = UserGender("Male")
+	FemaleUserGender = UserGender("Female")
 )
 
 type User struct {

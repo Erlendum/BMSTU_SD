@@ -27,7 +27,7 @@ var testUserPostgresRepositoryGetSuccess = []struct {
 				Password:  "$2a$10$1OOImwqdj8VCsC10WmVZZOqQqZ3roHRhFq69jZSwOdUQOZhzczv4S",
 				Fio:       "admin",
 				DateBirth: time.Date(2003, 1, 22, 0, 0, 0, 0, time.UTC),
-				Gender:    "Мужской",
+				Gender:    "Male",
 				IsAdmin:   true})
 		},
 	},
@@ -100,7 +100,7 @@ var testUserPostgresRepositoryGetByIdSuccess = []struct {
 				Password:  "$2a$10$1OOImwqdj8VCsC10WmVZZOqQqZ3roHRhFq69jZSwOdUQOZhzczv4S",
 				Fio:       "admin",
 				DateBirth: time.Date(2003, 1, 22, 0, 0, 0, 0, time.UTC),
-				Gender:    "Мужской",
+				Gender:    "Male",
 				IsAdmin:   true})
 		},
 	},

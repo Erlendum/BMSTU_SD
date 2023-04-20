@@ -76,6 +76,41 @@ func TestDiscountPostgresRepositoryDelete(t *testing.T) {
 	}
 }
 
+var testDiscountPostgresRepositoryCreateSuccess = []struct {
+	TestName  string
+	InputData struct {
+		discount *models.Discount
+	}
+	CheckOutput func(t *testing.T, err error)
+}{
+	{
+		TestName: "usual test",
+		InputData: struct {
+			discount *models.Discount
+		}{discount: &models.Discount{InstrumentId: 1, UserId: 1}},
+		CheckOutput: func(t *testing.T, err error) {
+			require.NoError(t, err)
+		},
+	},
+}
+
+func TestDiscountPostgresRepositoryCreate(t *testing.T) {
+	for _, tt := range testDiscountPostgresRepositoryCreateSuccess {
+		tt := tt
+		t.Run(tt.TestName, func(t *testing.T) {
+			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+
+			discountRepository := CreateDiscountPostgresRepository(fields)
+			discountRepository.Delete(tt.InputData.discount.DiscountId)
+			err := discountRepository.Create(tt.InputData.discount)
+			discountRepository.Delete(tt.InputData.discount.DiscountId)
+
+			tt.CheckOutput(t, err)
+		})
+	}
+
+}
+
 var testDiscountPostgresRepositoryUpdateSuccess = []struct {
 	TestName  string
 	InputData struct {
@@ -89,7 +124,7 @@ var testDiscountPostgresRepositoryUpdateSuccess = []struct {
 		InputData: struct {
 			discountId     uint64
 			fieldsToUpdate models.DiscountFieldsToUpdate
-		}{discountId: 0, fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldAmount: 3000, models.DiscountFieldType: "Процентная"}},
+		}{discountId: 0, fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldAmount: 3000, models.DiscountFieldType: "Percent"}},
 		CheckOutput: func(t *testing.T, err error) {
 			require.NoError(t, err)
 		},
@@ -109,7 +144,7 @@ var testDiscountPostgresRepositoryUpdateFailed = []struct {
 		InputData: struct {
 			discountId     uint64
 			fieldsToUpdate models.DiscountFieldsToUpdate
-		}{discountId: 2122, fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldAmount: 3000, models.DiscountFieldType: "Процентная"}},
+		}{discountId: 2122, fieldsToUpdate: map[models.DiscountField]any{models.DiscountFieldAmount: 3000, models.DiscountFieldType: "Percent"}},
 		CheckOutput: func(t *testing.T, err error) {
 			require.Error(t, err)
 		},
