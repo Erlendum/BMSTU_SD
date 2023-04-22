@@ -2,6 +2,7 @@ package servicesImplementation
 
 import (
 	"backend/internal/models"
+	"backend/internal/pkg/logger"
 	"backend/internal/repository"
 	"backend/internal/repository/postgres_repository"
 	"backend/internal/services"
@@ -34,13 +35,13 @@ func createUserServiceFieldsPostgres() *userServiceFieldsPostgres {
 
 	fields.comparisonListRepository = &comparisonListRepository
 	fields.userRepository = &userRepository
-	fields.calcDiscountService = NewCalcDiscountServiceImplementation(discountRepository)
+	fields.calcDiscountService = NewCalcDiscountServiceImplementation(discountRepository, logger.New(""))
 	fields.discountRepository = &discountRepository
 	return fields
 }
 
 func createUserServicePostgres(fields *userServiceFieldsPostgres) services.UserService {
-	return NewUserServiceImplementation(*fields.userRepository, *fields.comparisonListRepository, fields.calcDiscountService)
+	return NewUserServiceImplementation(*fields.userRepository, *fields.comparisonListRepository, fields.calcDiscountService, logger.New(""))
 }
 
 var testGetComparisonListPostgresSuccess = []struct {

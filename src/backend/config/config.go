@@ -9,6 +9,7 @@ type Config struct {
 	Postgres flags.PostgresFlags `mapstructure:"postgres"`
 	Address  string              `mapstructure:"address"`
 	Port     string              `mapstructure:"port"`
+	LogPath  string              `mapstructure:"log_path"`
 }
 
 func (c *Config) ParseConfig(configFileName, pathToConfig string) error {

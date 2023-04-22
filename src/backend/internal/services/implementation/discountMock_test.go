@@ -4,6 +4,7 @@ import (
 	"backend/internal/models"
 	"backend/internal/pkg/errors/repositoryErrors"
 	"backend/internal/pkg/errors/serviceErrors"
+	"backend/internal/pkg/logger"
 	mock_repository "backend/internal/repository/mocks"
 	"backend/internal/services"
 	"github.com/golang/mock/gomock"
@@ -26,7 +27,7 @@ func createDiscountServiceFields(controller *gomock.Controller) *discountService
 }
 
 func createDiscountService(fields *discountServiceFields) services.DiscountService {
-	return NewDiscountServiceImplementation(fields.discountRepositoryMock, fields.userRepositoryMock)
+	return NewDiscountServiceImplementation(fields.discountRepositoryMock, fields.userRepositoryMock, logger.New(""))
 }
 
 var testDiscountCreateSuccess = []struct {

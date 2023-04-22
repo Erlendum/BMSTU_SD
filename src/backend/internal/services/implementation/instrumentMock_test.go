@@ -4,6 +4,7 @@ import (
 	"backend/internal/models"
 	"backend/internal/pkg/errors/repositoryErrors"
 	"backend/internal/pkg/errors/serviceErrors"
+	"backend/internal/pkg/logger"
 	mock_repository "backend/internal/repository/mocks"
 	"backend/internal/services"
 	"github.com/golang/mock/gomock"
@@ -26,7 +27,7 @@ func createInstrumentServiceFields(controller *gomock.Controller) *instrumentSer
 }
 
 func createInstrumentService(fields *instrumentServiceFields) services.InstrumentService {
-	return NewInstrumentServiceImplementation(fields.instrumentRepositoryMock, fields.userRepositoryMock)
+	return NewInstrumentServiceImplementation(fields.instrumentRepositoryMock, fields.userRepositoryMock, logger.New(""))
 }
 
 var testInstrumentCreateSuccess = []struct {

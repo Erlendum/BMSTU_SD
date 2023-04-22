@@ -4,6 +4,7 @@ import (
 	"backend/internal/models"
 	"backend/internal/pkg/errors/repositoryErrors"
 	"backend/internal/pkg/errors/serviceErrors"
+	"backend/internal/pkg/logger"
 	mock_repository "backend/internal/repository/mocks"
 	"backend/internal/services"
 	"github.com/golang/mock/gomock"
@@ -26,7 +27,7 @@ func createComparisonListServiceFields(controller *gomock.Controller) *compariso
 }
 
 func createComparisonListService(fields *comparisonListServiceFields) services.ComparisonListService {
-	return NewComparisonListServiceImplementation(fields.comparisonListRepositoryMock, fields.instrumentRepositoryMock)
+	return NewComparisonListServiceImplementation(fields.comparisonListRepositoryMock, fields.instrumentRepositoryMock, logger.New(""))
 }
 
 var testAddInstrumentSuccess = []struct {

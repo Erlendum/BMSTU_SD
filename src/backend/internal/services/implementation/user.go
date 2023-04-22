@@ -6,6 +6,7 @@ import (
 	"backend/internal/pkg/errors/serviceErrors"
 	"backend/internal/pkg/hasher"
 	"backend/internal/pkg/hasher/implementation"
+	"backend/internal/pkg/logger"
 	"backend/internal/repository"
 	"backend/internal/services"
 )
@@ -15,14 +16,16 @@ type userServiceImplementation struct {
 	comparisonListRepository repository.ComparisonListRepository
 	calcDiscountService      services.CalcDiscountService
 	hasher                   hasher.Hasher
+	logger                   *logger.Logger
 }
 
-func NewUserServiceImplementation(userRepository repository.UserRepository, comparisonListRepository repository.ComparisonListRepository, calcDiscountService services.CalcDiscountService) services.UserService {
+func NewUserServiceImplementation(userRepository repository.UserRepository, comparisonListRepository repository.ComparisonListRepository, calcDiscountService services.CalcDiscountService, logger *logger.Logger) services.UserService {
 	return &userServiceImplementation{
 		userRepository:           userRepository,
 		comparisonListRepository: comparisonListRepository,
 		calcDiscountService:      calcDiscountService,
 		hasher:                   &implementation.BcryptHasher{},
+		logger:                   logger,
 	}
 }
 

@@ -3,6 +3,7 @@ package servicesImplementation
 import (
 	"backend/internal/models"
 	"backend/internal/pkg/errors/repositoryErrors"
+	"backend/internal/pkg/logger"
 	mock_repository "backend/internal/repository/mocks"
 	"backend/internal/services"
 	"github.com/golang/mock/gomock"
@@ -24,7 +25,7 @@ func createCalcDiscountServiceFields(controller *gomock.Controller) *calcDiscoun
 }
 
 func createCalcDiscountService(fields *calcDiscountServiceFields) services.CalcDiscountService {
-	return NewCalcDiscountServiceImplementation(fields.discountRepositoryMock)
+	return NewCalcDiscountServiceImplementation(fields.discountRepositoryMock, logger.New(""))
 }
 
 var testCalcDiscountSuccess = []struct {

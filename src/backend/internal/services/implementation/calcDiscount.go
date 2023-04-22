@@ -3,6 +3,7 @@ package servicesImplementation
 import (
 	"backend/internal/models"
 	"backend/internal/pkg/errors/repositoryErrors"
+	"backend/internal/pkg/logger"
 	"backend/internal/repository"
 	"backend/internal/services"
 	"strconv"
@@ -21,11 +22,13 @@ const (
 
 type calcDiscountServiceImplementation struct {
 	discountRepository repository.DiscountRepository
+	logger             *logger.Logger
 }
 
-func NewCalcDiscountServiceImplementation(discountRepository repository.DiscountRepository) services.CalcDiscountService {
+func NewCalcDiscountServiceImplementation(discountRepository repository.DiscountRepository, logger *logger.Logger) services.CalcDiscountService {
 	return &calcDiscountServiceImplementation{
 		discountRepository: discountRepository,
+		logger:             logger,
 	}
 }
 

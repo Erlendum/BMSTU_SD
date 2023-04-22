@@ -4,6 +4,7 @@ import (
 	"backend/internal/models"
 	"backend/internal/pkg/errors/repositoryErrors"
 	"backend/internal/pkg/errors/serviceErrors"
+	"backend/internal/pkg/logger"
 	"backend/internal/repository"
 	"backend/internal/services"
 )
@@ -11,12 +12,14 @@ import (
 type instrumentServiceImplementation struct {
 	instrumentRepository repository.InstrumentRepository
 	userRepository       repository.UserRepository
+	logger               *logger.Logger
 }
 
-func NewInstrumentServiceImplementation(instrumentRepository repository.InstrumentRepository, userRepository repository.UserRepository) services.InstrumentService {
+func NewInstrumentServiceImplementation(instrumentRepository repository.InstrumentRepository, userRepository repository.UserRepository, logger *logger.Logger) services.InstrumentService {
 	return &instrumentServiceImplementation{
 		instrumentRepository: instrumentRepository,
 		userRepository:       userRepository,
+		logger:               logger,
 	}
 }
 

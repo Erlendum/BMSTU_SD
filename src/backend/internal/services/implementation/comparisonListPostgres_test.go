@@ -1,6 +1,7 @@
 package servicesImplementation
 
 import (
+	"backend/internal/pkg/logger"
 	"backend/internal/repository"
 	"backend/internal/repository/postgres_repository"
 	"backend/internal/services"
@@ -26,7 +27,7 @@ func createComparisonListServiceFieldsPostgres() *comparisonListServiceFieldsPos
 }
 
 func createComparisonListServicePostgres(fields *comparisonListServiceFieldsPostgres) services.ComparisonListService {
-	return NewComparisonListServiceImplementation(*fields.comparisonListRepository, *fields.instrumentRepository)
+	return NewComparisonListServiceImplementation(*fields.comparisonListRepository, *fields.instrumentRepository, logger.New(""))
 }
 
 var testAddInstrumentPostgresSuccess = []struct {

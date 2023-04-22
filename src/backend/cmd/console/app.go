@@ -1,8 +1,10 @@
 package console
 
 import (
+	"backend/config"
 	"backend/internal/cli/handlers"
 	"backend/internal/models"
+	"backend/internal/pkg/logger"
 	"backend/internal/repository"
 	"backend/internal/repository/postgres_repository"
 	"backend/internal/services"
@@ -16,6 +18,7 @@ type App struct {
 	repositories *appRepositoryFields
 	services     *appServiceFields
 	handlers     *handlers.Handlers
+	config       *config.Config
 }
 
 type appRepositoryFields struct {
@@ -35,6 +38,7 @@ type appServiceFields struct {
 
 func (a *App) initRepositories() *appRepositoryFields {
 	fields := postgres_repository.CreatePostgresRepositoryFields("config.json", "./config")
+	a.config = &fields.Config
 	f := &appRepositoryFields{
 		comparisonListRepository: postgres_repository.CreateComparisonListPostgresRepository(fields),
 		discountRepository:       postgres_repository.CreateDiscountPostgresRepository(fields),
@@ -46,13 +50,14 @@ func (a *App) initRepositories() *appRepositoryFields {
 }
 
 func (a *App) initServices(r *appRepositoryFields) *appServiceFields {
-	calcDiscountService := servicesImplementation.NewCalcDiscountServiceImplementation(r.discountRepository)
+	lg := logger.New(a.config.LogPath)
+	calcDiscountService := servicesImplementation.NewCalcDiscountServiceImplementation(r.discountRepository, lg)
 	u := &appServiceFields{
 		CalcDiscountService:   calcDiscountService,
-		ComparisonListService: servicesImplementation.NewComparisonListServiceImplementation(r.comparisonListRepository, r.instrumentRepository),
-		DiscountService:       servicesImplementation.NewDiscountServiceImplementation(r.discountRepository, r.userRepository),
-		InstrumentService:     servicesImplementation.NewInstrumentServiceImplementation(r.instrumentRepository, r.userRepository),
-		UserService:           servicesImplementation.NewUserServiceImplementation(r.userRepository, r.comparisonListRepository, calcDiscountService),
+		ComparisonListService: servicesImplementation.NewComparisonListServiceImplementation(r.comparisonListRepository, r.instrumentRepository, lg),
+		DiscountService:       servicesImplementation.NewDiscountServiceImplementation(r.discountRepository, r.userRepository, lg),
+		InstrumentService:     servicesImplementation.NewInstrumentServiceImplementation(r.instrumentRepository, r.userRepository, lg),
+		UserService:           servicesImplementation.NewUserServiceImplementation(r.userRepository, r.comparisonListRepository, calcDiscountService, lg),
 	}
 
 	return u
@@ -147,7 +152,7 @@ func (a *App) Run() {
 	discountsPerPage := 10
 	discountPageNumber := 0
 	discountSubMenu := GoConsoleMenu.NewMenu("Navigating through pages")
-	discountSubMenu.AddMenuItem(GoConsoleMenu.NewActionItem(0, "Exit discounts list", func() { discountsPerPage = 0 }).SetAsExitOption())
+	discountSubMenu.AddMenuItem(GoConsoleMenu.NewActionItem(0, "Exit discounts list", func() { discountPageNumber = 0 }).SetAsExitOption())
 	discountSubMenu.AddMenuItem(GoConsoleMenu.NewActionItem(1, "Show list", func() {
 		discounts := a.handlers.DiscountHandler.GetList(discountPageNumber*discountsPerPage, discountsPerPage)
 		fmt.Println(discounts)

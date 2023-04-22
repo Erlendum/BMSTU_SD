@@ -4,6 +4,7 @@ import (
 	"backend/internal/models"
 	"backend/internal/pkg/errors/repositoryErrors"
 	"backend/internal/pkg/errors/serviceErrors"
+	"backend/internal/pkg/logger"
 	"backend/internal/repository"
 	"backend/internal/services"
 )
@@ -11,12 +12,14 @@ import (
 type discountServiceImplementation struct {
 	discountRepository repository.DiscountRepository
 	userRepository     repository.UserRepository
+	logger             *logger.Logger
 }
 
-func NewDiscountServiceImplementation(discountRepository repository.DiscountRepository, userRepository repository.UserRepository) services.DiscountService {
+func NewDiscountServiceImplementation(discountRepository repository.DiscountRepository, userRepository repository.UserRepository, logger *logger.Logger) services.DiscountService {
 	return &discountServiceImplementation{
 		discountRepository: discountRepository,
 		userRepository:     userRepository,
+		logger:             logger,
 	}
 }
 

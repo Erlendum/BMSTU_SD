@@ -6,6 +6,7 @@ import (
 	"backend/internal/pkg/errors/serviceErrors"
 	"backend/internal/pkg/hasher"
 	"backend/internal/pkg/hasher/implementation"
+	"backend/internal/pkg/logger"
 	mock_repository "backend/internal/repository/mocks"
 	"backend/internal/services"
 	"github.com/golang/mock/gomock"
@@ -32,14 +33,14 @@ func createUserServiceFields(controller *gomock.Controller) *userServiceFields {
 
 	fields.comparisonListRepositoryMock = mock_repository.NewMockComparisonListRepository(controller)
 	fields.userRepositoryMock = mock_repository.NewMockUserRepository(controller)
-	fields.calcDiscountService = NewCalcDiscountServiceImplementation(calcDiscountServiceFields.discountRepositoryMock)
+	fields.calcDiscountService = NewCalcDiscountServiceImplementation(calcDiscountServiceFields.discountRepositoryMock, logger.New(""))
 	fields.discountRepositoryMock = calcDiscountServiceFields.discountRepositoryMock
 	fields.hasher = &implementation.BcryptHasher{}
 	return fields
 }
 
 func createUserService(fields *userServiceFields) services.UserService {
-	return NewUserServiceImplementation(fields.userRepositoryMock, fields.comparisonListRepositoryMock, fields.calcDiscountService)
+	return NewUserServiceImplementation(fields.userRepositoryMock, fields.comparisonListRepositoryMock, fields.calcDiscountService, logger.New(""))
 }
 
 var testUserCreateFailed = []struct {

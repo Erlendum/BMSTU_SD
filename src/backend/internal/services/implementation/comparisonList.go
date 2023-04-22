@@ -3,6 +3,7 @@ package servicesImplementation
 import (
 	"backend/internal/pkg/errors/repositoryErrors"
 	"backend/internal/pkg/errors/serviceErrors"
+	"backend/internal/pkg/logger"
 	"backend/internal/repository"
 	"backend/internal/services"
 )
@@ -10,12 +11,14 @@ import (
 type comparisonListServiceImplementation struct {
 	comparisonListRepository repository.ComparisonListRepository
 	instrumentRepository     repository.InstrumentRepository
+	logger                   *logger.Logger
 }
 
-func NewComparisonListServiceImplementation(comparisonListRepository repository.ComparisonListRepository, instrumentRepository repository.InstrumentRepository) services.ComparisonListService {
+func NewComparisonListServiceImplementation(comparisonListRepository repository.ComparisonListRepository, instrumentRepository repository.InstrumentRepository, logger *logger.Logger) services.ComparisonListService {
 	return &comparisonListServiceImplementation{
 		comparisonListRepository: comparisonListRepository,
 		instrumentRepository:     instrumentRepository,
+		logger:                   logger,
 	}
 }
 
