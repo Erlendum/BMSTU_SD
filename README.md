@@ -45,13 +45,13 @@
 
 ![usecase_guest](./assets/usecase_guest.svg)
 
-![usecase_guest](./assets/usecase_user.svg)
+![usecase_user](./assets/usecase_user.svg)
 
-![usecase_guest](./assets/usecase_admin.svg)
+![usecase_admin](./assets/usecase_admin.svg)
 
 ## ER-диаграмма сущностей
 
-![usecase_guest](./assets/er.svg)
+![er](./assets/er.svg)
 
 ## Пользовательские сценарии
 
@@ -93,11 +93,11 @@
 
 * Добавление музыкального инструмента в список сравнения.
 
-![usecase_guest](./assets/bpmn_add.svg)
+![bpmn_add](./assets/bpmn_add.svg)
 
 * Удаление музыкального инструмента из списка сравнения.
 
-![usecase_guest](./assets/bpmn_remove.svg)
+![bpmn_remove](./assets/bpmn_remove.svg)
 
 ## Описание типа приложения и выбранного технологического стека
 
@@ -111,12 +111,12 @@
 
 ## Верхнеуровневое разбиение на компоненты
 
-![usecase_guest](./assets/high_level_components.svg)
+![high_level_components](./assets/high_level_components.svg)
 
-## UML диаграммы классов для двух отдельных компонентов - компонента доступа к данным и компонента с бизнес-логикой
+## UML-диаграмма классов всего приложения
 
-![usecase_guest](./assets/uml_classes.svg)
+![uml_classes](./assets/uml_classes.svg)
 
 ## ER-диаграмма сущностей базы данных
 
-![usecase_guest](./assets/er_db.svg)
+![er_db](./assets/er_db.svg)
