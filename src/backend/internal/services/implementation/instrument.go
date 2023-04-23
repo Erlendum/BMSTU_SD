@@ -24,47 +24,79 @@ func NewInstrumentServiceImplementation(instrumentRepository repository.Instrume
 }
 
 func (i *instrumentServiceImplementation) Create(instrument *models.Instrument, login string) error {
+	i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_name": instrument.Name}).Info("instrument create called")
+
 	user, err := i.userRepository.Get(login)
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
+		i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_name": instrument.Name}).Error(serviceErrors.InstrumentCreateFailed.Error() + serviceErrors.UserDoesNotExists.Error())
 		return serviceErrors.UserDoesNotExists
 	} else if err != nil {
+		i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_name": instrument.Name}).Error(serviceErrors.InstrumentCreateFailed.Error() + err.Error())
 		return err
 	}
 
 	if !user.IsAdmin {
+		i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_name": instrument.Name}).Error(serviceErrors.InstrumentCreateFailed.Error() + serviceErrors.UserCanNotCreateInstrument.Error())
 		return serviceErrors.UserCanNotCreateInstrument
 	}
 
-	return i.instrumentRepository.Create(instrument)
+	err = i.instrumentRepository.Create(instrument)
+	if err != nil {
+		i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_name": instrument.Name}).Error(serviceErrors.InstrumentCreateFailed.Error() + err.Error())
+		return err
+	}
+	return nil
 }
 
 func (i *instrumentServiceImplementation) Update(id uint64, login string, fieldsToUpdate models.InstrumentFieldsToUpdate) error {
+	i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_id": id}).Info("instrument update called")
+
 	canUpdate, err := i.checkCanUserChangeInstrument(id, login)
 	if err != nil {
+		i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_id": id}).Error(serviceErrors.InstrumentUpdateFailed.Error() + err.Error())
 		return err
 	} else if !canUpdate {
+		i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_id": id}).Error(serviceErrors.InstrumentUpdateFailed.Error() + serviceErrors.UserCanNotUpdateInstrument.Error())
 		return serviceErrors.UserCanNotUpdateInstrument
 	}
 
-	return i.instrumentRepository.Update(id, fieldsToUpdate)
+	err = i.instrumentRepository.Update(id, fieldsToUpdate)
+	if err != nil {
+		i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_id": id}).Error(serviceErrors.InstrumentUpdateFailed.Error() + err.Error())
+		return err
+	}
+	return nil
 }
 
 func (i *instrumentServiceImplementation) Delete(id uint64, login string) error {
+	i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_id": id}).Info("instrument delete called")
+
 	canDelete, err := i.checkCanUserChangeInstrument(id, login)
 	if err != nil {
+		i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_id": id}).Error(serviceErrors.InstrumentDeleteFailed.Error() + err.Error())
 		return err
 	} else if !canDelete {
+		i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_id": id}).Error(serviceErrors.InstrumentDeleteFailed.Error() + serviceErrors.UserCanNotDeleteInstrument.Error())
 		return serviceErrors.UserCanNotDeleteInstrument
 	}
 
-	return i.instrumentRepository.Delete(id)
+	err = i.instrumentRepository.Delete(id)
+	if err != nil {
+		i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_id": id}).Error(serviceErrors.InstrumentDeleteFailed.Error() + err.Error())
+		return err
+	}
+	return nil
 }
 
 func (i *instrumentServiceImplementation) Get(id uint64) (*models.Instrument, error) {
+	i.logger.WithFields(map[string]interface{}{"instrument_id": id}).Info("instrument get called")
+
 	instrument, err := i.instrumentRepository.Get(id)
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
+		i.logger.WithFields(map[string]interface{}{"instrument_id": id}).Error(serviceErrors.InstrumentGetFailed.Error() + serviceErrors.InstrumentDoesNotExists.Error())
 		return nil, serviceErrors.InstrumentDoesNotExists
 	} else if err != nil {
+		i.logger.WithFields(map[string]interface{}{"instrument_id": id}).Error(serviceErrors.InstrumentGetFailed.Error() + err.Error())
 		return nil, err
 	}
 
@@ -72,10 +104,14 @@ func (i *instrumentServiceImplementation) Get(id uint64) (*models.Instrument, er
 }
 
 func (i *instrumentServiceImplementation) GetList() ([]models.Instrument, error) {
+	i.logger.Info("instrument get list called")
+
 	instruments, err := i.instrumentRepository.GetList()
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
+		i.logger.Error(serviceErrors.InstrumentsListGetFailed.Error() + serviceErrors.InstrumentsDoesNotExists.Error())
 		return nil, serviceErrors.InstrumentsDoesNotExists
 	} else if err != nil {
+		i.logger.Error(serviceErrors.InstrumentsListGetFailed.Error() + err.Error())
 		return nil, err
 	}
 
