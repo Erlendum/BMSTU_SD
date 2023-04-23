@@ -54,4 +54,7 @@ var (
 
 	DeleteFailed           = errors.New("delete failed: ")
 	InstrumentDeleteFailed = fmt.Errorf("instrument %w", DeleteFailed)
+
+	ComparisonListAddInstrumentFailed    = errors.New("comparisonList add instrument failed: ")
+	ComparisonListDeleteInstrumentFailed = errors.New("comparisonList delete instrument failed: ")
 )
