@@ -41,19 +41,25 @@ var (
 	UserCreateFailed           = fmt.Errorf("user %w", CreateFailed)
 	ComparisonListCreateFailed = fmt.Errorf("comparisonList %w", CreateFailed)
 	InstrumentCreateFailed     = fmt.Errorf("instrument %w", CreateFailed)
+	DiscountCreateFailed       = fmt.Errorf("discount %w", CreateFailed)
+	DiscountForAllCreateFailed = fmt.Errorf("discount for all %w", CreateFailed)
 
 	GetFailed                = errors.New("get failed: ")
 	UserGetFailed            = fmt.Errorf("user %w", GetFailed)
 	ComparisonListGetFailed  = fmt.Errorf("comparisonList %w", GetFailed)
 	InstrumentGetFailed      = fmt.Errorf("instrument %w", GetFailed)
 	InstrumentsListGetFailed = fmt.Errorf("instruments list %w", GetFailed)
+	DiscountGetFailed        = fmt.Errorf("discount %w", GetFailed)
+	DiscountsListGetFailed   = fmt.Errorf("discounts list %w", GetFailed)
 
 	UpdateFailed               = errors.New("update failed: ")
 	ComparisonListUpdateFailed = fmt.Errorf("comparisonList %w", UpdateFailed)
 	InstrumentUpdateFailed     = fmt.Errorf("instrument %w", UpdateFailed)
+	DiscountUpdateFailed       = fmt.Errorf("discount %w", UpdateFailed)
 
 	DeleteFailed           = errors.New("delete failed: ")
 	InstrumentDeleteFailed = fmt.Errorf("instrument %w", DeleteFailed)
+	DiscountDeleteFailed   = fmt.Errorf("delete %w", DeleteFailed)
 
 	ComparisonListAddInstrumentFailed    = errors.New("comparisonList add instrument failed: ")
 	ComparisonListDeleteInstrumentFailed = errors.New("comparisonList delete instrument failed: ")

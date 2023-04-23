@@ -93,10 +93,10 @@ func (u *userServiceImplementation) GetComparisonList(id uint64) (*models.Compar
 	user, err := u.userRepository.GetById(id)
 
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login}).Error(serviceErrors.ComparisonListCreateFailed.Error() + serviceErrors.UserDoesNotExists.Error())
+		u.logger.WithFields(map[string]interface{}{"user_id": id}).Error(serviceErrors.ComparisonListCreateFailed.Error() + serviceErrors.UserDoesNotExists.Error())
 		return nil, nil, serviceErrors.UserDoesNotExists
 	} else if err != nil {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login}).Error(serviceErrors.ComparisonListCreateFailed.Error() + err.Error())
+		u.logger.WithFields(map[string]interface{}{"user_id": id}).Error(serviceErrors.ComparisonListCreateFailed.Error() + err.Error())
 		return nil, nil, err
 	}
 
