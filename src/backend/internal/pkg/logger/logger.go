@@ -34,10 +34,16 @@ func RequestLogger(lg *Logger) gin.HandlerFunc {
 
 type Logger struct {
 	*logrus.Logger
+	file *os.File
+}
+
+func (lg *Logger) Close() {
+	lg.file.Close()
 }
 
 func New(fileName string) *Logger {
 	lg := logrus.New()
+	var file *os.File = nil
 	if fileName == "" {
 		lg.Out = os.Stdout
 	} else {
@@ -45,8 +51,8 @@ func New(fileName string) *Logger {
 		if err != nil {
 			panic(err)
 		}
-		defer f.Close()
 		lg.Out = f
+		file = f
 	}
 	lg.SetReportCaller(true)
 
@@ -64,5 +70,5 @@ func New(fileName string) *Logger {
 
 	lg.SetFormatter(formatter)
 
-	return &Logger{lg}
+	return &Logger{lg, file}
 }

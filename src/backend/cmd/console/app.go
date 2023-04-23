@@ -19,6 +19,7 @@ type App struct {
 	services     *appServiceFields
 	handlers     *handlers.Handlers
 	config       *config.Config
+	logger       *logger.Logger
 }
 
 type appRepositoryFields struct {
@@ -51,6 +52,7 @@ func (a *App) initRepositories() *appRepositoryFields {
 
 func (a *App) initServices(r *appRepositoryFields) *appServiceFields {
 	lg := logger.New(a.config.LogPath)
+	a.logger = lg
 	calcDiscountService := servicesImplementation.NewCalcDiscountServiceImplementation(r.discountRepository, lg)
 	u := &appServiceFields{
 		CalcDiscountService:   calcDiscountService,
@@ -73,6 +75,8 @@ func (a *App) Init() {
 
 func (a *App) Run() {
 	a.Init()
+
+	defer a.logger.Close()
 
 	var user *models.User
 
