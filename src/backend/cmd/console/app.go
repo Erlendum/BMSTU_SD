@@ -104,6 +104,7 @@ func (a *App) Run() {
 			menu.ShowMenuItem(11)
 			menu.ShowMenuItem(12)
 			menu.ShowMenuItem(13)
+			menu.ShowMenuItem(14)
 		}
 	})
 	Menu.AddMenuItem(GoConsoleMenu.NewActionItem(0, "Exit menu", func() {}).SetAsExitOption())
