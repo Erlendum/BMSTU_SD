@@ -43,7 +43,7 @@ func Register(a *App) {
 		return
 	}
 	var gender models.UserGender
-	if scanner.Text() == "Male" || scanner.Text() == "Woman" {
+	if scanner.Text() == "Male" || scanner.Text() == "Female" {
 		gender = models.UserGender(scanner.Text())
 		tmpUser.Gender = gender
 	} else {
