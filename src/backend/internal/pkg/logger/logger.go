@@ -1,16 +1,11 @@
 package logger
 
 import (
-	"fmt"
-	"os"
-	"path"
-	"runtime"
-
-	nested "github.com/antonfisher/nested-logrus-formatter"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
-	"github.com/zput/zxcTool/ztLog/zt_formatter"
+	"github.com/x-cray/logrus-prefixed-formatter"
+	"os"
 )
 
 const ReqIDKey = "req_id"
@@ -56,18 +51,12 @@ func New(fileName string) *Logger {
 	}
 	lg.SetReportCaller(true)
 
-	formatter := &zt_formatter.ZtFormatter{
-		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
-			filename := path.Base(f.File)
-			return fmt.Sprintf("%s()", f.Function), fmt.Sprintf("%s:%d", filename, f.Line)
-		},
-		Formatter: nested.Formatter{
-			//HideKeys: true,
-			TimestampFormat: "2006-01-02T15:04:05Z07:00",
-			FieldsOrder:     []string{"req_id"},
-		},
+	formatter := &prefixed.TextFormatter{
+		ForceColors:     true,
+		TimestampFormat: "2006-01-02 15:04:05",
+		FullTimestamp:   true,
+		ForceFormatting: true,
 	}
-
 	lg.SetFormatter(formatter)
 
 	return &Logger{lg, file}
