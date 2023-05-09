@@ -1,0 +1,56 @@
+@font-face {
+	font-family: Moderne Sans;
+	src: url(https://bestfonts.pro/fonts_files/5f9193f095ab0af4eb921109/files/ModernaSans-Light.woff2);
+}
+
+.layout {
+}
+
+.heading {
+	padding-top: 100px;
+	padding-left: 100px;
+	padding-bottom: 20px;
+	@apply text-3xl font-semibold mb-5;
+}
+
+header {
+	position: sticky;
+	top: 0;
+	z-index: 3;
+	nav {
+		h1 {
+			font-family: Moderne Sans, sans-serif;
+			position: absolute;
+			left: 100px;
+			font-size: 30px;
+		}
+		position: absolute;
+		display: flex;
+		flex-direction: row;
+		font-size: 20px;
+		color: #fff;
+		justify-content: center;
+		align-items: center;
+		z-index: 3;
+		list-style: none;
+		background: #000;
+		padding: 30px;
+		width: 100%;
+		font-weight: bold;
+		left: 50%;
+		margin-top: 1%;
+		transform: translate(-50%, -40%);
+		@media screen and (max-width: 300px) {
+			font-size: 10px;
+		}
+
+		a {
+			margin-left: 70px;
+			margin-right: 70px;
+			&:hover {
+				cursor: pointer;
+				color: #2f31aa;
+			}
+		}
+	}
+}
