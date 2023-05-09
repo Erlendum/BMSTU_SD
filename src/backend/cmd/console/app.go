@@ -2,7 +2,7 @@ package console
 
 import (
 	"backend/config"
-	"backend/internal/cli/handlers"
+	"backend/internal/cli/CLIhandlers"
 	"backend/internal/models"
 	"backend/internal/pkg/logger"
 	"backend/internal/repository"
@@ -17,7 +17,7 @@ import (
 type App struct {
 	repositories *appRepositoryFields
 	services     *appServiceFields
-	handlers     *handlers.Handlers
+	handlers     *CLIhandlers.Handlers
 	config       *config.Config
 	logger       *logger.Logger
 }
@@ -68,9 +68,9 @@ func (a *App) initServices(r *appRepositoryFields) *appServiceFields {
 func (a *App) Init() {
 	a.repositories = a.initRepositories()
 	a.services = a.initServices(a.repositories)
-	handlerServices := handlers.HandlersServicesFields{}
+	handlerServices := CLIhandlers.HandlersServicesFields{}
 	copier.Copy(&handlerServices, a.services)
-	a.handlers = handlers.NewHandlers(handlerServices)
+	a.handlers = CLIhandlers.NewHandlers(handlerServices)
 }
 
 func (a *App) Run() {

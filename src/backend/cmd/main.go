@@ -1,12 +1,12 @@
 package main
 
 import (
-	"backend/cmd/console"
+	"backend/cmd/modes"
 )
 
 func main() {
-	//app := modes.App{}
-	app := console.App{}
+	app := modes.App{}
+	//app := console.App{}
 
 	app.Run()
 }
