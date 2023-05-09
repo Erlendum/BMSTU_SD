@@ -30,100 +30,102 @@ func NewUserServiceImplementation(userRepository repository.UserRepository, comp
 }
 
 func (u *userServiceImplementation) Create(user *models.User, password string) error {
-
+	fields := map[string]interface{}{"user_login": user.Login}
 	_, err := u.userRepository.Get(user.Login)
 	if err != nil && err != repositoryErrors.ObjectDoesNotExists {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login}).Error(serviceErrors.UserCreateFailed.Error() + err.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.UserCreateFailed.Error() + err.Error())
 		return err
 	} else if err == nil {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login}).Error(serviceErrors.UserCreateFailed.Error() + serviceErrors.UserAlreadyExists.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.UserCreateFailed.Error() + serviceErrors.UserAlreadyExists.Error())
 		return serviceErrors.UserAlreadyExists
 	}
 
 	hashPassword, err := u.hasher.GetHash(password)
 	if err != nil {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login}).Error(serviceErrors.UserCreateFailed.Error() + err.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.UserCreateFailed.Error() + err.Error())
 		return err
 	}
 	user.Password = string(hashPassword)
 
 	err = u.userRepository.Create(user)
 	if err != nil {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login}).Error(serviceErrors.UserCreateFailed.Error() + err.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.UserCreateFailed.Error() + err.Error())
 		return err
 	}
 
 	newUser, err := u.userRepository.Get(user.Login)
 	if err != nil {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login}).Error(serviceErrors.UserCreateFailed.Error() + err.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.UserCreateFailed.Error() + err.Error())
 		return err
 	}
 	err = u.comparisonListRepository.Create(&models.ComparisonList{UserId: newUser.UserId})
 	if err != nil {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login}).Error(serviceErrors.ComparisonListCreateFailed.Error() + err.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.ComparisonListCreateFailed.Error() + err.Error())
 		return err
 	}
 
-	u.logger.WithFields(map[string]interface{}{"user_login": user.Login}).Info("user create completed")
+	u.logger.WithFields(fields).Info("user create completed")
 
 	return nil
 }
 
 func (u *userServiceImplementation) Get(login string, password string) (*models.User, error) {
-
+	fields := map[string]interface{}{"user_login": login}
 	user, err := u.userRepository.Get(login)
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
-		u.logger.WithFields(map[string]interface{}{"user_login": login}).Error(serviceErrors.UserGetFailed.Error() + serviceErrors.UserDoesNotExists.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.UserGetFailed.Error() + serviceErrors.UserDoesNotExists.Error())
 		return nil, serviceErrors.UserDoesNotExists
 	} else if err != nil {
-		u.logger.WithFields(map[string]interface{}{"user_login": login}).Error(serviceErrors.UserGetFailed.Error() + err.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.UserGetFailed.Error() + err.Error())
 		return nil, err
 	}
 
 	if !u.hasher.Check(user.Password, password) {
-		u.logger.WithFields(map[string]interface{}{"user_login": login}).Error(serviceErrors.UserGetFailed.Error() + serviceErrors.InvalidPassword.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.UserGetFailed.Error() + serviceErrors.InvalidPassword.Error())
 		return nil, serviceErrors.InvalidPassword
 	}
 
-	u.logger.WithFields(map[string]interface{}{"user_login": login}).Info("user get completed")
+	u.logger.WithFields(fields).Info("user get completed")
 
 	return user, nil
 }
 
 func (u *userServiceImplementation) GetComparisonList(id uint64) (*models.ComparisonList, []models.Instrument, error) {
-
+	fields := map[string]interface{}{"user_id": id}
 	user, err := u.userRepository.GetById(id)
-
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
-		u.logger.WithFields(map[string]interface{}{"user_id": id}).Error(serviceErrors.ComparisonListCreateFailed.Error() + serviceErrors.UserDoesNotExists.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.ComparisonListCreateFailed.Error() + serviceErrors.UserDoesNotExists.Error())
 		return nil, nil, serviceErrors.UserDoesNotExists
 	} else if err != nil {
-		u.logger.WithFields(map[string]interface{}{"user_id": id}).Error(serviceErrors.ComparisonListCreateFailed.Error() + err.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.ComparisonListCreateFailed.Error() + err.Error())
 		return nil, nil, err
 	}
 
+	fields = map[string]interface{}{"user_login": user.Login, "user_id": user.UserId}
 	comparisonList, err := u.comparisonListRepository.Get(id)
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login, "user_id": user.UserId}).Error(serviceErrors.ComparisonListCreateFailed.Error() + serviceErrors.ComparisonListDoesNotExists.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.ComparisonListCreateFailed.Error() + serviceErrors.ComparisonListDoesNotExists.Error())
 		return nil, nil, serviceErrors.ComparisonListDoesNotExists
 	} else if err != nil {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login, "user_id": user.UserId}).Error(serviceErrors.ComparisonListCreateFailed.Error() + err.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.ComparisonListCreateFailed.Error() + err.Error())
 		return nil, nil, err
 	}
 
+	fields = map[string]interface{}{"user_login": user.Login, "user_id": user.UserId, "comparisonList_id": comparisonList.ComparisonListId}
 	instruments, err := u.comparisonListRepository.GetInstruments(id)
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
 		return comparisonList, nil, nil
 	} else if err != nil {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login, "user_id": user.UserId, "comparisonList_id": comparisonList.ComparisonListId}).Error(serviceErrors.ComparisonListCreateFailed.Error() + err.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.ComparisonListCreateFailed.Error() + err.Error())
 		return nil, nil, err
 	}
 
+	fields = map[string]interface{}{"user_login": user.Login, "user_id": user.UserId}
 	instruments, err = u.calcDiscountService.CalcDiscount(user, instruments)
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
 		return comparisonList, instruments, nil
 	} else if err != nil {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login, "user_id": user.UserId}).Error(serviceErrors.ComparisonListCreateFailed.Error() + err.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.ComparisonListCreateFailed.Error() + err.Error())
 		return nil, nil, err
 	}
 
@@ -132,27 +134,28 @@ func (u *userServiceImplementation) GetComparisonList(id uint64) (*models.Compar
 		totalPrice += instruments[i].Price
 	}
 
-	fields := models.ComparisonListFieldsToUpdate{}
+	fieldsToUpdate := models.ComparisonListFieldsToUpdate{}
 
-	fields[models.ComparisonListFieldTotalPrice] = totalPrice
-	fields[models.ComparisonListFieldAmount] = len(instruments)
+	fieldsToUpdate[models.ComparisonListFieldTotalPrice] = totalPrice
+	fieldsToUpdate[models.ComparisonListFieldAmount] = len(instruments)
 
-	err = u.comparisonListRepository.Update(comparisonList.ComparisonListId, fields)
+	err = u.comparisonListRepository.Update(comparisonList.ComparisonListId, fieldsToUpdate)
 	if err != nil {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login, "user_id": user.UserId}).Error(serviceErrors.ComparisonListCreateFailed.Error() + serviceErrors.ComparisonListUpdateFailed.Error() + err.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.ComparisonListCreateFailed.Error() + serviceErrors.ComparisonListUpdateFailed.Error() + err.Error())
 		return nil, nil, err
 	}
 
 	comparisonList, err = u.comparisonListRepository.Get(id)
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login, "user_id": user.UserId}).Error(serviceErrors.ComparisonListCreateFailed.Error() + serviceErrors.ComparisonListGetFailed.Error() + serviceErrors.ComparisonListDoesNotExists.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.ComparisonListCreateFailed.Error() + serviceErrors.ComparisonListGetFailed.Error() + serviceErrors.ComparisonListDoesNotExists.Error())
 		return nil, nil, serviceErrors.ComparisonListDoesNotExists
 	} else if err != nil {
-		u.logger.WithFields(map[string]interface{}{"user_login": user.Login, "user_id": user.UserId}).Error(serviceErrors.ComparisonListCreateFailed.Error() + serviceErrors.ComparisonListGetFailed.Error() + err.Error())
+		u.logger.WithFields(fields).Error(serviceErrors.ComparisonListCreateFailed.Error() + serviceErrors.ComparisonListGetFailed.Error() + err.Error())
 		return nil, nil, err
 	}
 
-	u.logger.WithFields(map[string]interface{}{"user_id": id}).Info("user get comparisonList completed")
+	fields = map[string]interface{}{"user_id": id}
+	u.logger.WithFields(fields).Info("user get comparisonList completed")
 
 	return comparisonList, instruments, nil
 }

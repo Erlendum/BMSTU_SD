@@ -25,41 +25,42 @@ func NewDiscountServiceImplementation(discountRepository repository.DiscountRepo
 
 func (d *discountServiceImplementation) Create(discount *models.Discount, login string) error {
 	user, err := d.userRepository.Get(login)
+	fields := map[string]interface{}{"user_login": login, "user_id": discount.UserId, "discount_type": discount.Type, "discount_dateBegin": discount.DateBegin, "discount_dateEnd": discount.DateEnd}
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
-		d.logger.WithFields(map[string]interface{}{"user_login": login, "user_id": discount.UserId, "discount_type": discount.Type, "discount_dateBegin": discount.DateBegin, "discount_dateEnd": discount.DateEnd}).Error(serviceErrors.DiscountCreateFailed.Error() + serviceErrors.UserDoesNotExists.Error())
+		d.logger.WithFields(fields).Error(serviceErrors.DiscountCreateFailed.Error() + serviceErrors.UserDoesNotExists.Error())
 		return serviceErrors.UserDoesNotExists
 	} else if err != nil {
-		d.logger.WithFields(map[string]interface{}{"user_login": login, "user_id": discount.UserId, "discount_type": discount.Type, "discount_dateBegin": discount.DateBegin, "discount_dateEnd": discount.DateEnd}).Error(serviceErrors.DiscountCreateFailed.Error() + err.Error())
+		d.logger.WithFields(fields).Error(serviceErrors.DiscountCreateFailed.Error() + err.Error())
 		return err
 	}
 
 	if !user.IsAdmin {
-		d.logger.WithFields(map[string]interface{}{"user_login": login, "user_id": discount.UserId, "discount_type": discount.Type, "discount_dateBegin": discount.DateBegin, "discount_dateEnd": discount.DateEnd}).Error(serviceErrors.DiscountCreateFailed.Error() + serviceErrors.UserCanNotCreateDiscount.Error())
+		d.logger.WithFields(fields).Error(serviceErrors.DiscountCreateFailed.Error() + serviceErrors.UserCanNotCreateDiscount.Error())
 		return serviceErrors.UserCanNotCreateDiscount
 	}
 
 	err = d.discountRepository.Create(discount)
 	if err != nil {
-		d.logger.WithFields(map[string]interface{}{"user_login": login, "user_id": discount.UserId, "discount_type": discount.Type, "discount_dateBegin": discount.DateBegin, "discount_dateEnd": discount.DateEnd}).Error(serviceErrors.DiscountCreateFailed.Error() + err.Error())
+		d.logger.WithFields(fields).Error(serviceErrors.DiscountCreateFailed.Error() + err.Error())
 		return err
 	}
-	d.logger.WithFields(map[string]interface{}{"user_login": login, "user_id": discount.UserId, "discount_type": discount.Type, "discount_dateBegin": discount.DateBegin, "discount_dateEnd": discount.DateEnd}).Info("discount create completed")
+	d.logger.WithFields(fields).Info("discount create completed")
 	return nil
 }
 
 func (d *discountServiceImplementation) CreateForAll(discount *models.Discount, login string) error {
-
 	user, err := d.userRepository.Get(login)
+	fields := map[string]interface{}{"user_login": login, "user_id": discount.UserId, "discount_type": discount.Type, "discount_dateBegin": discount.DateBegin, "discount_dateEnd": discount.DateEnd}
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
-		d.logger.WithFields(map[string]interface{}{"user_login": login, "user_id": discount.UserId, "discount_type": discount.Type, "discount_dateBegin": discount.DateBegin, "discount_dateEnd": discount.DateEnd}).Error(serviceErrors.DiscountForAllCreateFailed.Error() + serviceErrors.UserDoesNotExists.Error())
+		d.logger.WithFields(fields).Error(serviceErrors.DiscountForAllCreateFailed.Error() + serviceErrors.UserDoesNotExists.Error())
 		return serviceErrors.UserDoesNotExists
 	} else if err != nil {
-		d.logger.WithFields(map[string]interface{}{"user_login": login, "user_id": discount.UserId, "discount_type": discount.Type, "discount_dateBegin": discount.DateBegin, "discount_dateEnd": discount.DateEnd}).Error(serviceErrors.DiscountForAllCreateFailed.Error() + err.Error())
+		d.logger.WithFields(fields).Error(serviceErrors.DiscountForAllCreateFailed.Error() + err.Error())
 		return err
 	}
 
 	if !user.IsAdmin {
-		d.logger.WithFields(map[string]interface{}{"user_login": login, "user_id": discount.UserId, "discount_type": discount.Type, "discount_dateBegin": discount.DateBegin, "discount_dateEnd": discount.DateEnd}).Error(serviceErrors.DiscountForAllCreateFailed.Error() + serviceErrors.UserCanNotCreateDiscount.Error())
+		d.logger.WithFields(fields).Error(serviceErrors.DiscountForAllCreateFailed.Error() + serviceErrors.UserCanNotCreateDiscount.Error())
 		return serviceErrors.UserCanNotCreateDiscount
 	}
 
@@ -72,68 +73,69 @@ func (d *discountServiceImplementation) CreateForAll(discount *models.Discount, 
 		discount.UserId = userId
 		err = d.discountRepository.Create(discount)
 		if err != nil {
-			d.logger.WithFields(map[string]interface{}{"user_login": login, "user_id": discount.UserId, "discount_type": discount.Type, "discount_dateBegin": discount.DateBegin, "discount_dateEnd": discount.DateEnd}).Error(serviceErrors.DiscountForAllCreateFailed.Error() + err.Error())
+			d.logger.WithFields(fields).Error(serviceErrors.DiscountForAllCreateFailed.Error() + err.Error())
 			return err
 		}
 	}
 
-	d.logger.WithFields(map[string]interface{}{"user_login": login, "user_id": discount.UserId, "discount_type": discount.Type, "discount_dateBegin": discount.DateBegin, "discount_dateEnd": discount.DateEnd}).Info("discount create for all completed")
+	d.logger.WithFields(fields).Info("discount create for all completed")
 
 	return nil
 }
 
 func (d *discountServiceImplementation) Update(id uint64, login string, fieldsToUpdate models.DiscountFieldsToUpdate) error {
-
+	fields := map[string]interface{}{"user_login": login, "discount_id": id}
 	canUpdate, err := d.checkCanUserChangeDiscount(id, login)
 	if err != nil {
 		return err
 	} else if !canUpdate {
-		d.logger.WithFields(map[string]interface{}{"user_login": login, "discount_id": id}).Error(serviceErrors.DiscountUpdateFailed.Error() + serviceErrors.UserCanNotUpdateDiscount.Error())
+		d.logger.WithFields(fields).Error(serviceErrors.DiscountUpdateFailed.Error() + serviceErrors.UserCanNotUpdateDiscount.Error())
 		return serviceErrors.UserCanNotUpdateDiscount
 	}
 
 	err = d.discountRepository.Update(id, fieldsToUpdate)
 	if err != nil {
-		d.logger.WithFields(map[string]interface{}{"user_login": login, "discount_id": id}).Error(serviceErrors.DiscountUpdateFailed.Error() + err.Error())
+		d.logger.WithFields(fields).Error(serviceErrors.DiscountUpdateFailed.Error() + err.Error())
 		return err
 	}
-	d.logger.WithFields(map[string]interface{}{"user_login": login, "discount_id": id}).Info("discount update completed")
+	d.logger.WithFields(fields).Info("discount update completed")
 
 	return nil
 }
 
 func (d *discountServiceImplementation) Delete(id uint64, login string) error {
-
+	fields := map[string]interface{}{"user_login": login, "discount_id": id}
 	canDelete, err := d.checkCanUserChangeDiscount(id, login)
 	if err != nil {
-		d.logger.WithFields(map[string]interface{}{"user_login": login, "discount_id": id}).Error(serviceErrors.DiscountDeleteFailed.Error() + err.Error())
+		d.logger.WithFields(fields).Error(serviceErrors.DiscountDeleteFailed.Error() + err.Error())
 		return err
 	} else if !canDelete {
-		d.logger.WithFields(map[string]interface{}{"user_login": login, "discount_id": id}).Error(serviceErrors.DiscountDeleteFailed.Error() + serviceErrors.UserCanNotDeleteDiscount.Error())
+		d.logger.WithFields(fields).Error(serviceErrors.DiscountDeleteFailed.Error() + serviceErrors.UserCanNotDeleteDiscount.Error())
 		return serviceErrors.UserCanNotDeleteDiscount
 	}
 
 	err = d.discountRepository.Delete(id)
 	if err != nil {
-		d.logger.WithFields(map[string]interface{}{"user_login": login, "discount_id": id}).Error(serviceErrors.DiscountDeleteFailed.Error() + err.Error())
+		d.logger.WithFields(fields).Error(serviceErrors.DiscountDeleteFailed.Error() + err.Error())
 	}
 
-	d.logger.WithFields(map[string]interface{}{"user_login": login, "discount_id": id}).Info("discount delete completed")
+	d.logger.WithFields(fields).Info("discount delete completed")
 
 	return nil
 }
 
 func (d *discountServiceImplementation) Get(id uint64) (*models.Discount, error) {
+	fields := map[string]interface{}{"discount_id": id}
 	discount, err := d.discountRepository.Get(id)
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
-		d.logger.WithFields(map[string]interface{}{"discount_id": id}).Error(serviceErrors.DiscountGetFailed.Error() + serviceErrors.DiscountDoesNotExists.Error())
+		d.logger.WithFields(fields).Error(serviceErrors.DiscountGetFailed.Error() + serviceErrors.DiscountDoesNotExists.Error())
 		return nil, serviceErrors.DiscountDoesNotExists
 	} else if err != nil {
-		d.logger.WithFields(map[string]interface{}{"discount_id": id}).Error(serviceErrors.DiscountGetFailed.Error() + err.Error())
+		d.logger.WithFields(fields).Error(serviceErrors.DiscountGetFailed.Error() + err.Error())
 		return nil, err
 	}
 
-	d.logger.WithFields(map[string]interface{}{"discount_id": id}).Info("discount get completed")
+	d.logger.WithFields(fields).Info("discount get completed")
 
 	return discount, nil
 }
