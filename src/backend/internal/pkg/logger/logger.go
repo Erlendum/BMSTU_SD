@@ -35,8 +35,7 @@ type Logger struct {
 func (lg *Logger) Close() {
 	lg.file.Close()
 }
-
-func New(fileName string) *Logger {
+func New(fileName string, logLevel string) *Logger {
 	lg := logrus.New()
 	var file *os.File = nil
 	if fileName == "" {
@@ -48,6 +47,13 @@ func New(fileName string) *Logger {
 		}
 		lg.Out = f
 		file = f
+	}
+	if logLevel != "" {
+		level, err := logrus.ParseLevel(logLevel)
+		if err != nil {
+			return nil
+		}
+		lg.SetLevel(level)
 	}
 	lg.SetReportCaller(true)
 

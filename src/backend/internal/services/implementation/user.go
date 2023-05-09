@@ -30,7 +30,6 @@ func NewUserServiceImplementation(userRepository repository.UserRepository, comp
 }
 
 func (u *userServiceImplementation) Create(user *models.User, password string) error {
-	u.logger.WithFields(map[string]interface{}{"user_login": user.Login}).Info("user create called")
 
 	_, err := u.userRepository.Get(user.Login)
 	if err != nil && err != repositoryErrors.ObjectDoesNotExists {
@@ -64,11 +63,13 @@ func (u *userServiceImplementation) Create(user *models.User, password string) e
 		u.logger.WithFields(map[string]interface{}{"user_login": user.Login}).Error(serviceErrors.ComparisonListCreateFailed.Error() + err.Error())
 		return err
 	}
+
+	u.logger.WithFields(map[string]interface{}{"user_login": user.Login}).Info("user create completed")
+
 	return nil
 }
 
 func (u *userServiceImplementation) Get(login string, password string) (*models.User, error) {
-	u.logger.WithFields(map[string]interface{}{"user_login": login}).Info("user get called")
 
 	user, err := u.userRepository.Get(login)
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
@@ -84,11 +85,12 @@ func (u *userServiceImplementation) Get(login string, password string) (*models.
 		return nil, serviceErrors.InvalidPassword
 	}
 
+	u.logger.WithFields(map[string]interface{}{"user_login": login}).Info("user get completed")
+
 	return user, nil
 }
 
 func (u *userServiceImplementation) GetComparisonList(id uint64) (*models.ComparisonList, []models.Instrument, error) {
-	u.logger.WithFields(map[string]interface{}{"user_id": id}).Info("user get comparisonList called")
 
 	user, err := u.userRepository.GetById(id)
 
@@ -149,6 +151,8 @@ func (u *userServiceImplementation) GetComparisonList(id uint64) (*models.Compar
 		u.logger.WithFields(map[string]interface{}{"user_login": user.Login, "user_id": user.UserId}).Error(serviceErrors.ComparisonListCreateFailed.Error() + serviceErrors.ComparisonListGetFailed.Error() + err.Error())
 		return nil, nil, err
 	}
+
+	u.logger.WithFields(map[string]interface{}{"user_id": id}).Info("user get comparisonList completed")
 
 	return comparisonList, instruments, nil
 }

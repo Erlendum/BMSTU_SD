@@ -9,5 +9,6 @@
 
   "port": ":8080",
   "address": "0.0.0.0",
-  "log_path": "log.log"
+  "log_path": "log.log",
+  "log_level": "TRACE"
 }

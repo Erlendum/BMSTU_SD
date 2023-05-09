@@ -24,8 +24,6 @@ func NewInstrumentServiceImplementation(instrumentRepository repository.Instrume
 }
 
 func (i *instrumentServiceImplementation) Create(instrument *models.Instrument, login string) error {
-	i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_name": instrument.Name}).Info("instrument create called")
-
 	user, err := i.userRepository.Get(login)
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
 		i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_name": instrument.Name}).Error(serviceErrors.InstrumentCreateFailed.Error() + serviceErrors.UserDoesNotExists.Error())
@@ -45,11 +43,13 @@ func (i *instrumentServiceImplementation) Create(instrument *models.Instrument, 
 		i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_name": instrument.Name}).Error(serviceErrors.InstrumentCreateFailed.Error() + err.Error())
 		return err
 	}
+
+	i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_name": instrument.Name}).Info("instrument create completed")
+
 	return nil
 }
 
 func (i *instrumentServiceImplementation) Update(id uint64, login string, fieldsToUpdate models.InstrumentFieldsToUpdate) error {
-	i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_id": id}).Info("instrument update called")
 
 	canUpdate, err := i.checkCanUserChangeInstrument(id, login)
 	if err != nil {
@@ -65,11 +65,13 @@ func (i *instrumentServiceImplementation) Update(id uint64, login string, fields
 		i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_id": id}).Error(serviceErrors.InstrumentUpdateFailed.Error() + err.Error())
 		return err
 	}
+
+	i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_id": id}).Info("instrument update completed")
+
 	return nil
 }
 
 func (i *instrumentServiceImplementation) Delete(id uint64, login string) error {
-	i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_id": id}).Info("instrument delete called")
 
 	canDelete, err := i.checkCanUserChangeInstrument(id, login)
 	if err != nil {
@@ -85,12 +87,13 @@ func (i *instrumentServiceImplementation) Delete(id uint64, login string) error 
 		i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_id": id}).Error(serviceErrors.InstrumentDeleteFailed.Error() + err.Error())
 		return err
 	}
+
+	i.logger.WithFields(map[string]interface{}{"user_login": login, "instrument_id": id}).Info("instrument delete completed")
+
 	return nil
 }
 
 func (i *instrumentServiceImplementation) Get(id uint64) (*models.Instrument, error) {
-	i.logger.WithFields(map[string]interface{}{"instrument_id": id}).Info("instrument get called")
-
 	instrument, err := i.instrumentRepository.Get(id)
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
 		i.logger.WithFields(map[string]interface{}{"instrument_id": id}).Error(serviceErrors.InstrumentGetFailed.Error() + serviceErrors.InstrumentDoesNotExists.Error())
@@ -100,11 +103,12 @@ func (i *instrumentServiceImplementation) Get(id uint64) (*models.Instrument, er
 		return nil, err
 	}
 
+	i.logger.WithFields(map[string]interface{}{"instrument_id": id}).Info("instrument get completed")
+
 	return instrument, nil
 }
 
 func (i *instrumentServiceImplementation) GetList() ([]models.Instrument, error) {
-	i.logger.Info("instrument get list called")
 
 	instruments, err := i.instrumentRepository.GetList()
 	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
@@ -115,6 +119,7 @@ func (i *instrumentServiceImplementation) GetList() ([]models.Instrument, error)
 		return nil, err
 	}
 
+	i.logger.Info("instrument get list completed")
 	return instruments, nil
 }
 

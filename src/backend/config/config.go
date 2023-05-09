@@ -10,6 +10,7 @@ type Config struct {
 	Address  string              `mapstructure:"address"`
 	Port     string              `mapstructure:"port"`
 	LogPath  string              `mapstructure:"log_path"`
+	LogLevel string              `mapstructure:"log_level"`
 }
 
 func (c *Config) ParseConfig(configFileName, pathToConfig string) error {

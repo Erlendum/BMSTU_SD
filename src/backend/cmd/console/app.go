@@ -51,7 +51,7 @@ func (a *App) initRepositories() *appRepositoryFields {
 }
 
 func (a *App) initServices(r *appRepositoryFields) *appServiceFields {
-	lg := logger.New(a.config.LogPath)
+	lg := logger.New(a.config.LogPath, a.config.LogLevel)
 	a.logger = lg
 	calcDiscountService := servicesImplementation.NewCalcDiscountServiceImplementation(r.discountRepository, lg)
 	u := &appServiceFields{
