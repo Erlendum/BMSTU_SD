@@ -16,5 +16,10 @@ func NewRouter(h *handlers.Handlers) *http.ServeMux {
 	mux.HandleFunc("/comparison_list", http.HandlerFunc(h.UserHandler.GetComparisonList))
 	mux.HandleFunc("/add_instrument_to_comparison_list", http.HandlerFunc(h.ComparisonListHandler.AddInstrument))
 	mux.HandleFunc("/delete_instrument_from_comparison_list", http.HandlerFunc(h.ComparisonListHandler.DeleteInstrument))
+	mux.HandleFunc("/create_discount", http.HandlerFunc(h.DiscountHandler.Create))
+	mux.HandleFunc("/create_for_all_discount", http.HandlerFunc(h.DiscountHandler.CreateForAll))
+	mux.HandleFunc("/discounts", http.HandlerFunc(h.DiscountHandler.GetList))
+	mux.HandleFunc("/delete_discount", http.HandlerFunc(h.DiscountHandler.Delete))
+	mux.HandleFunc("/update_discount", http.HandlerFunc(h.DiscountHandler.Update))
 	return mux
 }
