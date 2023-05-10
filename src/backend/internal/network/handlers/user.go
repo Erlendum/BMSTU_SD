@@ -108,6 +108,6 @@ func (h *UserHandler) GetComparisonList(w http.ResponseWriter, r *http.Request) 
 
 	structure := make(map[string]any)
 	structure["comparisonList"] = comparisonList
-	structure["cartInstruments"] = instruments
+	structure["comparisonListInstruments"] = instruments
 	sendMapResponse(w, http.StatusOK, structure)
 }

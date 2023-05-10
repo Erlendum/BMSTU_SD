@@ -49,7 +49,9 @@ func (i *ComparisonListPostgresRepository) AddInstrument(id uint64, instrumentId
 }
 
 func (i *ComparisonListPostgresRepository) DeleteInstrument(id uint64, instrumentId uint64) error {
-	query := `delete from store.comparisonLists_instruments where comparisonList_id = $1 and instrument_id = $2;`
+	query := `delete from store.comparisonLists_instruments where comparisonList_id = $1 and comparisonlists_instruments_id in
+                                              (select comparisonlists_instruments_id from store. comparisonlists_instruments
+                                                                                     where comparisonlist_id = $1 and instrument_id = $2 limit 1);`
 	res, err := i.db.Exec(query, id, instrumentId)
 	count, _ := res.RowsAffected()
 	if count == 0 || errors.Is(err, sql.ErrNoRows) {
