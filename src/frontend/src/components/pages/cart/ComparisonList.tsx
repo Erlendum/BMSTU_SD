@@ -45,7 +45,6 @@ const ComparisonList: FC = () => {
 			<div className={styles.text}>
 				Total Price: {comparisonList?.TotalPrice}
 			</div>
-			{/*<div className={styles.wrapper}>{displayCartInstruments}</div>*/}
 			<table className={styles.table}>
 				<thead>
 					<tr>

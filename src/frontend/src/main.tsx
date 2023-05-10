@@ -8,6 +8,7 @@ import ComparisonList from './components/pages/cart/ComparisonList'
 import RegisterForm from './components/ui/form/RegisterForm'
 import LoginForm from './components/ui/form/LoginForm'
 import { UserService } from './services/user.service'
+import Discounts from './components/pages/discounts/Discounts'
 
 const queryClient = new QueryClient()
 
@@ -24,6 +25,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 		<Router>
 			<Routes>
 				<Route path='/' element={<Home />} />
+				<Route path='/discounts' element={<Discounts />} />
 				<Route path='/comparison_list' element={<ComparisonList />} />
 				<Route path='/register' element={<RegisterForm />} />
 				<Route path='/login' element={<LoginForm />} />

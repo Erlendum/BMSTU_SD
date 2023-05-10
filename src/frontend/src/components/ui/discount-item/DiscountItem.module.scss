@@ -1,0 +1,71 @@
+* {
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: 'Roboto', sans-serif;
+}
+a {
+	text-decoration: none;
+}
+
+.links {
+	margin-right: 5px;
+}
+
+.item {
+	padding-left: 100px;
+	padding-right: 100px;
+	position: relative;
+	box-shadow: 0 2px 7px #dfdfdf;
+	height: 100%;
+	padding-bottom: 30px;
+
+	//margin: 50px auto;
+	background: #fafafa;
+	img {
+	}
+	> .heading {
+		@apply uppercase mb-2 font-semibold;
+	}
+
+	> .price {
+		border-top: 1px solid #eee;
+		font-size: 18px;
+		color: black;
+		font-weight: 600;
+	}
+
+	> .type {
+		display: block;
+		font-size: 12px;
+		font-weight: 700;
+		text-transform: uppercase;
+		color: #ccc;
+		margin-bottom: 18px;
+	}
+
+	> .id {
+		@apply text-purple-700 font-extrabold;
+	}
+	> .links {
+		position: absolute;
+		right: 50px;
+		bottom: 20px;
+	}
+	> .links a {
+		display: inline-block;
+		margin-left: 5px;
+		color: #e1e1e1;
+		transition: 0.3s;
+		font-size: 17px;
+		position: relative;
+	}
+
+	> .links a:hover {
+		color: black;
+	}
+}
