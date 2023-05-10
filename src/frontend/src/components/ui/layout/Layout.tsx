@@ -19,7 +19,7 @@ const Layout: FC<PropsWithChildren<{ title?: string }>> = ({
 					<nav>
 						<h1>MUSIC STORE</h1>
 						<Link to='/'>Home</Link>
-						<Link to='/cart'>Cart</Link>
+						<Link to='/comparison_list'>Comparison List</Link>
 						<Link to='/logout'>Logout</Link>
 					</nav>
 					<h1>Music Store</h1>

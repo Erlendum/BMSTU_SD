@@ -44,7 +44,7 @@ const AddInstrumentDBForm = () => {
 	const classes = useStyles()
 	const [values, setValues] = useState<IInstrument>({
 		InstrumentId: 0,
-		BrandId: 0,
+		Brand: '',
 		Name: '',
 		Price: 0,
 		Material: '',
@@ -53,15 +53,13 @@ const AddInstrumentDBForm = () => {
 	})
 	const [errors, setErrors] = useState({
 		priceNotNumber: '',
-		priceNotPositiveNumber: '',
-		brandNotNumber: '',
-		brandNotPositiveNumber: ''
+		priceNotPositiveNumber: ''
 	})
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		validateFields()
 
-		if (event.target.name == 'BrandId' || event.target.name == 'Price')
+		if (event.target.name == 'Price')
 			setValues({
 				...values,
 				[event.target.name]: parseInt(event.target.value)
@@ -81,7 +79,6 @@ const AddInstrumentDBForm = () => {
 			}
 		})
 		console.log(values)
-
 		console.log(error)
 	}
 
@@ -112,36 +109,10 @@ const AddInstrumentDBForm = () => {
 			return error
 		}
 
-		if (isNaN(values.BrandId)) {
-			error = true
-			console.log('brandId not a number')
-
-			setErrors(state => ({
-				...state,
-				brandNotNumber: 'Brand id should be integer number',
-				brandNotPositiveNumber: ''
-			}))
-			console.log('brandNotNumber set')
-			return error
-		}
-		if (values.BrandId < 0) {
-			error = true
-			console.log('brandId not a positive number')
-
-			setErrors(state => ({
-				...state,
-				brandNotNumber: '',
-				brandNotPositiveNumber: 'Brand id should be positive number'
-			}))
-			console.log('brandNotPositiveNumber set')
-			return error
-		}
 		setErrors(state => ({
 			...state,
 			priceNotNumber: '',
-			priceNotPositiveNumber: '',
-			brandNotNumber: '',
-			brandNotPositiveNumber: ''
+			priceNotPositiveNumber: ''
 		}))
 		console.log('no errors')
 		return error
@@ -155,17 +126,10 @@ const AddInstrumentDBForm = () => {
 			<form onSubmit={e => handleSubmit(e)} className={classes.form}>
 				<CustomTextField
 					changeHandler={handleChange}
-					label={'Brand id'}
-					error={
-						Boolean(errors.brandNotNumber) ||
-						Boolean(errors.brandNotPositiveNumber)
-					}
-					helperText={
-						errors.brandNotNumber == ''
-							? errors.brandNotPositiveNumber
-							: errors.brandNotNumber
-					}
-					name={'BrandId'}
+					label={'Brand'}
+					error={false}
+					helperText={''}
+					name={'Brand'}
 					hide={false}
 				/>
 				<CustomTextField

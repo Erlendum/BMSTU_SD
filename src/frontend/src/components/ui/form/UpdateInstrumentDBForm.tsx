@@ -8,11 +8,8 @@ import {
 } from '@material-ui/core'
 
 import CustomTextField from './CustomTextField'
-import CustomDropDown from './CustomDropDown'
 import { IInstrument } from '../../../types/instrument.interface'
 import { InstrumentService } from '../../../services/instrument.service'
-import CustomNumberInput from './CustomNumberInput'
-import { useQuery } from 'react-query'
 import MessageBox from '../message-box/MessageBox'
 
 const useStyles = makeStyles(() =>
@@ -45,7 +42,7 @@ const UpdateInstrumentDBForm = ({ id }) => {
 	const classes = useStyles()
 	const [values, setValues] = useState<IInstrument>({
 		InstrumentId: id,
-		BrandId: 0,
+		Brand: '',
 		Name: '',
 		Price: 0,
 		Material: '',
@@ -54,15 +51,13 @@ const UpdateInstrumentDBForm = ({ id }) => {
 	})
 	const [errors, setErrors] = useState({
 		priceNotNumber: '',
-		priceNotPositiveNumber: '',
-		brandNotNumber: '',
-		brandNotPositiveNumber: ''
+		priceNotPositiveNumber: ''
 	})
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		validateFields()
 
-		if (event.target.name == 'BrandId' || event.target.name == 'Price')
+		if (event.target.name == 'Price')
 			setValues({
 				...values,
 				[event.target.name]: parseInt(event.target.value)
@@ -112,37 +107,10 @@ const UpdateInstrumentDBForm = ({ id }) => {
 			console.log('priceNotPositiveNumber set')
 			return error
 		}
-
-		if (isNaN(values.BrandId)) {
-			error = true
-			console.log('brandId not a number')
-
-			setErrors(state => ({
-				...state,
-				brandNotNumber: 'Brand id should be integer number',
-				brandNotPositiveNumber: ''
-			}))
-			console.log('brandNotNumber set')
-			return error
-		}
-		if (values.BrandId < 0) {
-			error = true
-			console.log('brandId not a positive number')
-
-			setErrors(state => ({
-				...state,
-				brandNotNumber: '',
-				brandNotPositiveNumber: 'Brand id should be positive number'
-			}))
-			console.log('brandNotPositiveNumber set')
-			return error
-		}
 		setErrors(state => ({
 			...state,
 			priceNotNumber: '',
-			priceNotPositiveNumber: '',
-			brandNotNumber: '',
-			brandNotPositiveNumber: ''
+			priceNotPositiveNumber: ''
 		}))
 		console.log('no errors')
 		return error
@@ -156,17 +124,10 @@ const UpdateInstrumentDBForm = ({ id }) => {
 			<form onSubmit={e => handleSubmit(e)} className={classes.form}>
 				<CustomTextField
 					changeHandler={handleChange}
-					label={'Brand id'}
-					error={
-						Boolean(errors.brandNotNumber) ||
-						Boolean(errors.brandNotPositiveNumber)
-					}
-					helperText={
-						errors.brandNotNumber == ''
-							? errors.brandNotPositiveNumber
-							: errors.brandNotNumber
-					}
-					name={'BrandId'}
+					label={'Brand'}
+					error={false}
+					helperText={''}
+					name={'Brand'}
 					hide={false}
 				/>
 				<CustomTextField
@@ -221,7 +182,7 @@ const UpdateInstrumentDBForm = ({ id }) => {
 					variant={'contained'}
 					className={classes.button}
 				>
-					Add
+					Update
 				</Button>
 				<MessageBox type={error == 'no error' ? 'success' : 'error'}>
 					{error == 'no error' ? 'success' : error}

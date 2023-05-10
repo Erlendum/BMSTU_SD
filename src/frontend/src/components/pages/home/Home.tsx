@@ -37,7 +37,7 @@ const Home: FC = () => {
 				<div>
 					<InstrumentItem
 						instrument={instrument}
-						isCart={false}
+						isComparisonList={false}
 						key={instrument.InstrumentId}
 					/>
 				</div>

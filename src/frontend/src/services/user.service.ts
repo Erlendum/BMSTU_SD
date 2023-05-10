@@ -1,7 +1,10 @@
 import axios from 'axios'
 import { IUser, IUserResponse } from '../types/user.interface'
 import { IInstrumentsResponse } from '../types/instrument.interface'
-import { ICart, ICartResponse } from '../types/cart.interface'
+import {
+	IComparisonList,
+	IComparisonListResponse
+} from '../types/comparisonList.interface'
 
 axios.defaults.baseURL = 'http://localhost:8080'
 
@@ -12,12 +15,18 @@ export const UserService = {
 		return res.data
 	},
 
-	async getCart() {
-		const response = await axios.get<ICartResponse>('/cart', {
-			params: { id: this.getCurrentUserId() }
-		})
-		if (response.data.cart != null) {
-			localStorage.setItem('cartId', response.data.cart.CartId.toString())
+	async getComparisonList() {
+		const response = await axios.get<IComparisonListResponse>(
+			'/comparison_list',
+			{
+				params: { id: this.getCurrentUserId() }
+			}
+		)
+		if (response.data.comparisonList != null) {
+			localStorage.setItem(
+				'comparisonListId',
+				response.data.comparisonList.ComparisonListId.toString()
+			)
 		}
 		return response.data
 	},
@@ -33,7 +42,7 @@ export const UserService = {
 			localStorage.setItem('user', res.data.user.Login)
 			localStorage.setItem('isAdmin', res.data.user.IsAdmin ? 'true' : 'false')
 			const link = document.createElement('a')
-			link.href = '/cart'
+			link.href = '/comparison_list'
 			document.body.appendChild(link)
 			link.click()
 		}
@@ -48,14 +57,14 @@ export const UserService = {
 	getCurrentIsAdmin() {
 		return localStorage.getItem('isAdmin')
 	},
-	getCartId() {
-		return localStorage.getItem('cartId')
+	getComparisonListId() {
+		return localStorage.getItem('comparisonListId')
 	},
 	logout() {
 		localStorage.removeItem('user')
 		localStorage.removeItem('userId')
 		localStorage.removeItem('isAdmin')
-		localStorage.removeItem('cartId')
+		localStorage.removeItem('comparisonListId')
 		const link = document.createElement('a')
 		link.href = '/'
 		document.body.appendChild(link)

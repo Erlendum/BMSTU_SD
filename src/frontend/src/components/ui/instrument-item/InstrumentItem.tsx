@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { IInstrument } from '../../../types/instrument.interface'
 
 import styles from './InstrumentItem.module.scss'
@@ -6,70 +6,57 @@ import { UserService } from '../../../services/user.service'
 import { InstrumentService } from '../../../services/instrument.service'
 import UpdateInstrumentDBForm from '../form/UpdateInstrumentDBForm'
 import Modal from '../modal/Modal'
-import { CartService } from '../../../services/cart.service'
+import { ComparisonListService } from '../../../services/comparisonList.service'
 import { toast, ToastContainer } from 'react-toastify'
 
-const InstrumentItem: FC<{ instrument: IInstrument; isCart: boolean }> = ({
-	instrument,
-	isCart
-}) => {
+const InstrumentItem: FC<{
+	instrument: IInstrument
+	isComparisonList: boolean
+}> = ({ instrument, isComparisonList }) => {
 	const [error, setError] = useState('no error')
 	let isLogin = UserService.getCurrentLogin() != null
 	let isAdmin =
 		UserService.getCurrentIsAdmin() != null &&
 		UserService.getCurrentIsAdmin() == 'true'
 
+	useEffect(() => {
+		if (error != 'no error') {
+			toast.error('ERROR ' + error, {
+				position: toast.POSITION.BOTTOM_LEFT
+			})
+		}
+	}, [error])
+
 	const handleDelete = async () => {
-		await setError('no error')
-		InstrumentService.delete(instrument.InstrumentId).catch(error => {
+		setError('no error')
+		let isError = false
+		await InstrumentService.delete(instrument.InstrumentId).catch(error => {
+			isError = true
 			if (error.response) {
 				setError(error.response.data.Error)
+				console.log(error.response.data.Error)
 			}
 		})
-		if (error == 'no error') {
+		if (!isError) {
 			toast.success('Instrument was successfully deleted', {
 				position: toast.POSITION.BOTTOM_LEFT
 			})
-		} else {
-			toast.error('ERROR ' + error, {
-				position: toast.POSITION.BOTTOM_LEFT
-			})
 		}
-		console.log(error)
-	}
-
-	const handleDeleteCart = async () => {
-		await setError('no error')
-		CartService.deleteInstrument(instrument.InstrumentId).catch(error => {
-			if (error.response) {
-				setError(error.response.data.Error)
-			}
-		})
-		if (error == 'no error') {
-			toast.success('Instrument was successfully deleted from cart', {
-				position: toast.POSITION.BOTTOM_LEFT
-			})
-		} else {
-			toast.error('ERROR ' + error, {
-				position: toast.POSITION.BOTTOM_LEFT
-			})
-		}
-		console.log(error)
 	}
 
 	const handleAddInstrumentToCart = async () => {
-		await setError('no error')
-		CartService.addInstrument(instrument.InstrumentId).catch(error => {
-			if (error.response) {
-				setError(error.response.data.Error)
+		setError('no error')
+		let isError = false
+		ComparisonListService.addInstrument(instrument.InstrumentId).catch(
+			error => {
+				isError = true
+				if (error.response) {
+					setError(error.response.data.Error)
+				}
 			}
-		})
-		if (error == 'no error') {
-			toast.success('Instrument was successfully added to cart', {
-				position: toast.POSITION.BOTTOM_LEFT
-			})
-		} else {
-			toast.error('ERROR ' + error, {
+		)
+		if (!isError) {
+			toast.success('Instrument was successfully added', {
 				position: toast.POSITION.BOTTOM_LEFT
 			})
 		}
@@ -95,22 +82,19 @@ const InstrumentItem: FC<{ instrument: IInstrument; isCart: boolean }> = ({
 			<div className={styles.links} hidden={!isLogin}>
 				<a href='javascript:void(0);'>
 					<i
-						hidden={isCart}
+						hidden={isComparisonList}
 						onClick={handleAddInstrumentToCart}
-						className='fa fa-shopping-cart'
+						className='fa fa-heart'
 					></i>
 				</a>
 				<a href='javascript:void(0);' onClick={handleDelete}>
-					<i hidden={!isAdmin || isCart} className='fa fa-trash'></i>
-				</a>
-				<a href='javascript:void(0);' onClick={handleDeleteCart}>
-					<i hidden={!isCart} className='fa fa-trash'></i>
+					<i hidden={!isAdmin || isComparisonList} className='fa fa-trash'></i>
 				</a>
 				<a
 					href='javascript:void(0);'
 					onClick={() => setUpdateInstrumentInDBModalActive(true)}
 				>
-					<i hidden={!isAdmin || isCart} className='fa fa-edit'></i>
+					<i hidden={!isAdmin || isComparisonList} className='fa fa-edit'></i>
 				</a>
 			</div>
 			<Modal

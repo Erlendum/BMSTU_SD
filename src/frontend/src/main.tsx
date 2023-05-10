@@ -4,7 +4,7 @@ import Home from './components/pages/home/Home'
 import './index.css'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
-import Cart from './components/pages/cart/Cart'
+import ComparisonList from './components/pages/cart/ComparisonList'
 import RegisterForm from './components/ui/form/RegisterForm'
 import LoginForm from './components/ui/form/LoginForm'
 import { UserService } from './services/user.service'
@@ -24,7 +24,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 		<Router>
 			<Routes>
 				<Route path='/' element={<Home />} />
-				<Route path='/cart' element={<Cart />} />
+				<Route path='/comparison_list' element={<ComparisonList />} />
 				<Route path='/register' element={<RegisterForm />} />
 				<Route path='/login' element={<LoginForm />} />
 				<Route
