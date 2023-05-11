@@ -12,7 +12,9 @@ import { toast, ToastContainer } from 'react-toastify'
 const InstrumentItem: FC<{
 	instrument: IInstrument
 	isComparisonList: boolean
-}> = ({ instrument, isComparisonList }) => {
+	updateQuery: boolean,
+	setUpdateQuery: any
+}> = ({ instrument, isComparisonList, updateQuery, setUpdateQuery }) => {
 	const [error, setError] = useState('no error')
 	let isLogin = UserService.getCurrentLogin() != null
 	let isAdmin =
@@ -40,11 +42,13 @@ const InstrumentItem: FC<{
 		if (!isError) {
 			toast.success('Instrument was successfully deleted', {
 				position: toast.POSITION.BOTTOM_LEFT
+
 			})
+			setUpdateQuery(!updateQuery)
 		}
 	}
 
-	const handleAddInstrumentToCart = async () => {
+	const handleAddInstrumentToComparisonList = async () => {
 		setError('no error')
 		let isError = false
 		ComparisonListService.addInstrument(instrument.InstrumentId).catch(
@@ -83,7 +87,7 @@ const InstrumentItem: FC<{
 				<a href='javascript:void(0);'>
 					<i
 						hidden={isComparisonList}
-						onClick={handleAddInstrumentToCart}
+						onClick={handleAddInstrumentToComparisonList}
 						className='fa fa-heart'
 					></i>
 				</a>
@@ -101,7 +105,7 @@ const InstrumentItem: FC<{
 				active={UpdateInstrumentInDBModalActive}
 				setActive={setUpdateInstrumentInDBModalActive}
 			>
-				<UpdateInstrumentDBForm id={instrument.InstrumentId} />
+				<UpdateInstrumentDBForm updateQuery={updateQuery} setUpdateQuery={setUpdateQuery} id={instrument.InstrumentId} />
 			</Modal>
 			<ToastContainer />
 		</div>

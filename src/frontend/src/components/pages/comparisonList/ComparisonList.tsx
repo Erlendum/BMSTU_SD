@@ -12,8 +12,10 @@ import InstrumentItemTable from '../../ui/instrument-item-table/InstrumentItemTa
 const ComparisonList: FC = () => {
 	const [error, setError] = useState('no error')
 	let instrumentId = 0
+	const [updateQuery, setUpdateQuery] =
+		useState(false)
 	const { data: comparisonListInstruments, isLoading } = useQuery(
-		['comparisonListInstruments'],
+		['comparisonListInstruments', updateQuery],
 		() => UserService.getComparisonList(),
 		{
 			select: ({ comparisonListInstruments }) => comparisonListInstruments
@@ -21,7 +23,7 @@ const ComparisonList: FC = () => {
 	)
 
 	const { data: comparisonList } = useQuery(
-		['comparisonList'],
+		['comparisonList', updateQuery],
 		() => UserService.getComparisonList(),
 		{
 			select: ({ comparisonList }) => comparisonList
@@ -32,6 +34,8 @@ const ComparisonList: FC = () => {
 		instrument => {
 			return (
 				<InstrumentItemTable
+					updateQuery={updateQuery}
+					setUpdateQuery={setUpdateQuery}
 					instrument={instrument}
 					key={instrument.InstrumentId}
 				/>

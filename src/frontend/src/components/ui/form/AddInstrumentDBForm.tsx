@@ -39,7 +39,8 @@ const useStyles = makeStyles(() =>
 	})
 )
 
-const AddInstrumentDBForm = () => {
+// @ts-ignore
+const AddInstrumentDBForm = ({updateQuery, setUpdateQuery}) => {
 	const [error, setError] = useState('')
 	const classes = useStyles()
 	const [values, setValues] = useState<IInstrument>({
@@ -78,6 +79,7 @@ const AddInstrumentDBForm = () => {
 				setError(error.response.data.Error)
 			}
 		})
+		setUpdateQuery(!updateQuery)
 		console.log(values)
 		console.log(error)
 	}

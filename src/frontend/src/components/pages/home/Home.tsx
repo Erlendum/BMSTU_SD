@@ -18,8 +18,11 @@ const Home: FC = () => {
 	const [AddInstrumentInDBModalActive, setAddInstrumentInDBModalActive] =
 		useState(false)
 
+	const [updateQuery, setUpdateQuery] =
+		useState(false)
+
 	const { data: instruments, isLoading } = useQuery(
-		['instruments'],
+		['instruments', updateQuery],
 		() => InstrumentService.getList(),
 		{
 			select: ({ instruments }) => instruments
@@ -39,6 +42,8 @@ const Home: FC = () => {
 						instrument={instrument}
 						isComparisonList={false}
 						key={instrument.InstrumentId}
+						updateQuery={updateQuery}
+						setUpdateQuery={setUpdateQuery}
 					/>
 				</div>
 			)
@@ -81,7 +86,7 @@ const Home: FC = () => {
 						active={AddInstrumentInDBModalActive}
 						setActive={setAddInstrumentInDBModalActive}
 					>
-						<AddInstrumentDBForm />
+						<AddInstrumentDBForm updateQuery={updateQuery} setUpdateQuery={setUpdateQuery}/>
 					</Modal>
 				</div>
 			) : (

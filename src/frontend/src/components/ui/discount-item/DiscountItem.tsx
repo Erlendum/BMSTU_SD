@@ -12,7 +12,9 @@ import UpdateDiscountDBForm from '../form/UpdateDiscountDBForm'
 
 const DiscountItem: FC<{
 	discount: IDiscount
-}> = ({ discount }) => {
+	updateQuery: boolean
+	setUpdateQuery: any
+}> = ({ discount , updateQuery, setUpdateQuery}) => {
 	const [error, setError] = useState('no error')
 	const [UpdateDiscountInDBModalActive, setUpdateDiscountInDBModalActive] =
 		useState(false)
@@ -40,6 +42,7 @@ const DiscountItem: FC<{
 			toast.success('Discount was successfully deleted', {
 				position: toast.POSITION.BOTTOM_LEFT
 			})
+			setUpdateQuery(!updateQuery)
 		}
 		console.log(error)
 	}

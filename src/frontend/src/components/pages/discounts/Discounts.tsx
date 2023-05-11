@@ -20,9 +20,11 @@ const Discounts: FC = () => {
 		UserService.getCurrentIsAdmin() == 'true'
 	const [AddDiscountInDBModalActive, setAddDiscountInDBModalActive] =
 		useState(false)
+	const [updateQuery, setUpdateQuery] =
+		useState(false)
 
 	const { data: discounts, isLoading } = useQuery(
-		['discounts'],
+		['discounts', updateQuery],
 		() => DiscountService.getList(),
 		{
 			select: ({ discounts }) => discounts
@@ -33,14 +35,14 @@ const Discounts: FC = () => {
 	const discountsPerPage = 24
 	const pagesVisited = pageNumber * discountsPerPage
 
-	const displayDiscounts = discounts
-		?.slice(pagesVisited, pagesVisited + discountsPerPage)
-		.map(discount => {
-			let userId = UserService.getCurrentUserId()
-			if (userId == null) return
-			if (!isAdmin && discount.UserId != parseInt(userId)) return
-			return <DiscountItem discount={discount} key={discount.DiscountId} />
-		})
+	const displayDiscounts = discounts?.slice(pagesVisited, pagesVisited + discountsPerPage)
+			.map(discount => {
+				let userId = UserService.getCurrentUserId()
+				if (userId == null) return
+				if (!isAdmin && discount.UserId != parseInt(userId)) return
+				return <DiscountItem updateQuery={updateQuery} setUpdateQuery={setUpdateQuery} discount={discount} key={discount.DiscountId} />
+			})
+
 
 	// @ts-ignore
 	const pagesCount = Math.ceil(discounts?.length / discountsPerPage)
@@ -93,7 +95,7 @@ const Discounts: FC = () => {
 					active={AddDiscountInDBModalActive}
 					setActive={setAddDiscountInDBModalActive}
 				>
-					<AddDiscountDBForm />
+					<AddDiscountDBForm updateQuery={updateQuery} setUpdateQuery={setUpdateQuery}/>
 				</Modal>
 			</div>
 			<ToastContainer />

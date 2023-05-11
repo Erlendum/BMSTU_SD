@@ -9,7 +9,9 @@ import styles from '../instrument-item-table/InstrumentItemTable.module.scss'
 
 const InstrumentItemTable: FC<{
 	instrument: IInstrument
-}> = ({ instrument }) => {
+	updateQuery: boolean
+	setUpdateQuery: any
+}> = ({ instrument ,updateQuery, setUpdateQuery}) => {
 	const [error, setError] = useState('no error')
 
 	useEffect(() => {
@@ -35,6 +37,7 @@ const InstrumentItemTable: FC<{
 			toast.success('Instrument was successfully deleted', {
 				position: toast.POSITION.BOTTOM_LEFT
 			})
+			setUpdateQuery(!updateQuery)
 		}
 		console.log(error)
 	}

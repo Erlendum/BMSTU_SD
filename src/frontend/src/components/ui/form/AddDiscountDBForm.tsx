@@ -37,7 +37,8 @@ const useStyles = makeStyles(() =>
 	})
 )
 
-const AddDiscountDBForm = () => {
+// @ts-ignore
+const AddDiscountDBForm = ({updateQuery, setUpdateQuery}) => {
 	const [error, setError] = useState('')
 	const [isForAll, setIsForAll] = useState(false)
 	const classes = useStyles()
@@ -104,6 +105,7 @@ const AddDiscountDBForm = () => {
 		}
 		values.DateBegin = oldBeginDate
 		values.DateEnd = oldEndDate
+		setUpdateQuery(!updateQuery)
 		console.log(values)
 		console.log(error)
 	}
@@ -221,7 +223,7 @@ const AddDiscountDBForm = () => {
 			return error
 		}
 
-		if (isNaN(Date.parse(values.DateBegin.replace(/-/g, '/')))) {
+		if (values.DateBegin != '' && isNaN(Date.parse(values.DateBegin.replace(/-/g, '/')))) {
 			error = true
 			console.log('invalid dateBegin')
 
@@ -240,7 +242,7 @@ const AddDiscountDBForm = () => {
 			return error
 		}
 
-		if (isNaN(Date.parse(values.DateEnd.replace(/-/g, '/')))) {
+		if (values.DateEnd != '' && isNaN(Date.parse(values.DateEnd.replace(/-/g, '/')))) {
 			error = true
 			console.log('invalid dateEnd')
 

@@ -80,7 +80,7 @@ const RegisterForm = () => {
 
 	const validateFields = () => {
 		let error = false
-		if (isNaN(Date.parse(values.DateBirth))) {
+		if (values.DateBirth != '' && isNaN(Date.parse(values.DateBirth.replace(/-/g, '/')))) {
 			error = true
 			console.log('invalid date')
 
