@@ -134,3 +134,17 @@ func (mr *MockComparisonListRepositoryMockRecorder) Update(id, fieldsToUpdate in
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockDiscountRepository)(nil).Update), id, fieldsToUpdate)
 }
+
+// Clear mocks base method.
+func (m *MockComparisonListRepository) Clear(id uint64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Clear", id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Clear indicates an expected call of Clear.
+func (mr *MockComparisonListRepositoryMockRecorder) Clear(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Clear", reflect.TypeOf((*MockComparisonListRepository)(nil).Clear), id)
+}

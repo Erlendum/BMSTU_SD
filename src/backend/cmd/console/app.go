@@ -228,11 +228,5 @@ func (a *App) Run() {
 		UpdateDiscount(a, user.Login)
 	}))
 
-	//defer func() {
-	//	if err := recover(); err != nil {
-	//		log.Println("Invalid menu option")
-	//	}
-	//}()
-
 	Menu.Display()
 }

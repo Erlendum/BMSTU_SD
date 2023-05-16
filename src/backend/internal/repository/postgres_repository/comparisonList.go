@@ -170,3 +170,16 @@ func (i *ComparisonListPostgresRepository) Update(id uint64, fieldsToUpdate mode
 	}
 	return nil
 }
+
+func (i *ComparisonListPostgresRepository) Clear(id uint64) error {
+	query := `delete from store.comparisonlists_instruments where comparisonlist_id = $1;`
+	res, err := i.db.Exec(query, id)
+	count, _ := res.RowsAffected()
+	if count == 0 || errors.Is(err, sql.ErrNoRows) {
+		return repositoryErrors.ObjectDoesNotExists
+	} else if err != nil {
+		return err
+	}
+
+	return nil
+}

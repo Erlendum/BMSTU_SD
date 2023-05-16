@@ -25,7 +25,7 @@ func createCalcDiscountServiceFields(controller *gomock.Controller) *calcDiscoun
 }
 
 func createCalcDiscountService(fields *calcDiscountServiceFields) services.CalcDiscountService {
-	return NewCalcDiscountServiceImplementation(fields.discountRepositoryMock, logger.New(""))
+	return NewCalcDiscountServiceImplementation(fields.discountRepositoryMock, logger.New("", ""))
 }
 
 var testCalcDiscountSuccess = []struct {

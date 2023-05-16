@@ -27,7 +27,7 @@ func createInstrumentServiceFields(controller *gomock.Controller) *instrumentSer
 }
 
 func createInstrumentService(fields *instrumentServiceFields) services.InstrumentService {
-	return NewInstrumentServiceImplementation(fields.instrumentRepositoryMock, fields.userRepositoryMock, logger.New(""))
+	return NewInstrumentServiceImplementation(fields.instrumentRepositoryMock, fields.userRepositoryMock, logger.New("", ""))
 }
 
 var testInstrumentCreateSuccess = []struct {

@@ -27,7 +27,7 @@ func createComparisonListServiceFieldsPostgres() *comparisonListServiceFieldsPos
 }
 
 func createComparisonListServicePostgres(fields *comparisonListServiceFieldsPostgres) services.ComparisonListService {
-	return NewComparisonListServiceImplementation(*fields.comparisonListRepository, *fields.instrumentRepository, logger.New(""))
+	return NewComparisonListServiceImplementation(*fields.comparisonListRepository, *fields.instrumentRepository, logger.New("", ""))
 }
 
 var testAddInstrumentPostgresSuccess = []struct {

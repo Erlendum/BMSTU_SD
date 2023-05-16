@@ -27,7 +27,7 @@ func createComparisonListServiceFields(controller *gomock.Controller) *compariso
 }
 
 func createComparisonListService(fields *comparisonListServiceFields) services.ComparisonListService {
-	return NewComparisonListServiceImplementation(fields.comparisonListRepositoryMock, fields.instrumentRepositoryMock, logger.New(""))
+	return NewComparisonListServiceImplementation(fields.comparisonListRepositoryMock, fields.instrumentRepositoryMock, logger.New("", ""))
 }
 
 var testAddInstrumentSuccess = []struct {

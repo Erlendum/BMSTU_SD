@@ -33,14 +33,14 @@ func createUserServiceFields(controller *gomock.Controller) *userServiceFields {
 
 	fields.comparisonListRepositoryMock = mock_repository.NewMockComparisonListRepository(controller)
 	fields.userRepositoryMock = mock_repository.NewMockUserRepository(controller)
-	fields.calcDiscountService = NewCalcDiscountServiceImplementation(calcDiscountServiceFields.discountRepositoryMock, logger.New(""))
+	fields.calcDiscountService = NewCalcDiscountServiceImplementation(calcDiscountServiceFields.discountRepositoryMock, logger.New("", ""))
 	fields.discountRepositoryMock = calcDiscountServiceFields.discountRepositoryMock
 	fields.hasher = &implementation.BcryptHasher{}
 	return fields
 }
 
 func createUserService(fields *userServiceFields) services.UserService {
-	return NewUserServiceImplementation(fields.userRepositoryMock, fields.comparisonListRepositoryMock, fields.calcDiscountService, logger.New(""))
+	return NewUserServiceImplementation(fields.userRepositoryMock, fields.comparisonListRepositoryMock, fields.calcDiscountService, logger.New("", ""))
 }
 
 var testUserCreateFailed = []struct {

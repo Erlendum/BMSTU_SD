@@ -35,13 +35,13 @@ func createUserServiceFieldsPostgres() *userServiceFieldsPostgres {
 
 	fields.comparisonListRepository = &comparisonListRepository
 	fields.userRepository = &userRepository
-	fields.calcDiscountService = NewCalcDiscountServiceImplementation(discountRepository, logger.New(""))
+	fields.calcDiscountService = NewCalcDiscountServiceImplementation(discountRepository, logger.New("", ""))
 	fields.discountRepository = &discountRepository
 	return fields
 }
 
 func createUserServicePostgres(fields *userServiceFieldsPostgres) services.UserService {
-	return NewUserServiceImplementation(*fields.userRepository, *fields.comparisonListRepository, fields.calcDiscountService, logger.New(""))
+	return NewUserServiceImplementation(*fields.userRepository, *fields.comparisonListRepository, fields.calcDiscountService, logger.New("", ""))
 }
 
 var testGetComparisonListPostgresSuccess = []struct {

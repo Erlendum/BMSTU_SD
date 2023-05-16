@@ -48,3 +48,9 @@ func CreateUserPostgresRepository(fields *PostgresRepositoryFields) repository.U
 
 	return NewUserPostgresRepository(dbx)
 }
+
+func CreateOrderPostgresRepository(fields *PostgresRepositoryFields) repository.OrderRepository {
+	dbx := sqlx.NewDb(fields.Db, "pgx")
+
+	return NewOrderPostgresRepository(dbx)
+}

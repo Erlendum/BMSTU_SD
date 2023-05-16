@@ -7,6 +7,7 @@ type HandlersServicesFields struct {
 	UserService           services.UserService
 	ComparisonListService services.ComparisonListService
 	DiscountService       services.DiscountService
+	OrderService          services.OrderService
 }
 
 type Handlers struct {
@@ -14,6 +15,7 @@ type Handlers struct {
 	UserHandler           *UserHandler
 	ComparisonListHandler *ComparisonListHandler
 	DiscountHandler       *DiscountHandler
+	OrderHandler          *OrderHandler
 }
 
 func NewHandlers(services HandlersServicesFields) *Handlers {
@@ -22,5 +24,6 @@ func NewHandlers(services HandlersServicesFields) *Handlers {
 		UserHandler:           NewUserHandler(services.UserService),
 		ComparisonListHandler: NewComparisonListHandler(services.ComparisonListService),
 		DiscountHandler:       NewDiscountHandler(services.DiscountService),
+		OrderHandler:          NewOrderHandler(services.OrderService),
 	}
 }

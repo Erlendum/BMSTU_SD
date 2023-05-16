@@ -21,5 +21,6 @@ func NewRouter(h *handlers.Handlers) *http.ServeMux {
 	mux.HandleFunc("/discounts", http.HandlerFunc(h.DiscountHandler.GetList))
 	mux.HandleFunc("/delete_discount", http.HandlerFunc(h.DiscountHandler.Delete))
 	mux.HandleFunc("/update_discount", http.HandlerFunc(h.DiscountHandler.Update))
+	mux.HandleFunc("/create_order", http.HandlerFunc(h.OrderHandler.Create))
 	return mux
 }

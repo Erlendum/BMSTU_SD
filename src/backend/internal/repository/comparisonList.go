@@ -10,4 +10,5 @@ type ComparisonListRepository interface {
 	Get(userId uint64) (*models.ComparisonList, error)
 	GetUser(id uint64) (*models.User, error)
 	GetInstruments(userId uint64) ([]models.Instrument, error)
+	Clear(id uint64) error
 }

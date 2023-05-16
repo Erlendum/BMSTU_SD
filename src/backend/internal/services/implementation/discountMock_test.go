@@ -27,7 +27,7 @@ func createDiscountServiceFields(controller *gomock.Controller) *discountService
 }
 
 func createDiscountService(fields *discountServiceFields) services.DiscountService {
-	return NewDiscountServiceImplementation(fields.discountRepositoryMock, fields.userRepositoryMock, logger.New(""))
+	return NewDiscountServiceImplementation(fields.discountRepositoryMock, fields.userRepositoryMock, logger.New("", ""))
 }
 
 var testDiscountCreateSuccess = []struct {
