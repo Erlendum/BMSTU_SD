@@ -27,6 +27,7 @@ type appRepositoryFields struct {
 	discountRepository       repository.DiscountRepository
 	instrumentRepository     repository.InstrumentRepository
 	userRepository           repository.UserRepository
+	orderRepository          repository.OrderRepository
 }
 
 type appServiceFields struct {
@@ -35,6 +36,7 @@ type appServiceFields struct {
 	DiscountService       services.DiscountService
 	InstrumentService     services.InstrumentService
 	UserService           services.UserService
+	OrderService          services.OrderService
 }
 
 func (a *App) initRepositories() *appRepositoryFields {
@@ -45,6 +47,7 @@ func (a *App) initRepositories() *appRepositoryFields {
 		discountRepository:       postgres_repository.CreateDiscountPostgresRepository(fields),
 		instrumentRepository:     postgres_repository.CreateInstrumentPostgresRepository(fields),
 		userRepository:           postgres_repository.CreateUserPostgresRepository(fields),
+		orderRepository:          postgres_repository.CreateOrderPostgresRepository(fields),
 	}
 
 	return f
@@ -60,6 +63,7 @@ func (a *App) initServices(r *appRepositoryFields) *appServiceFields {
 		DiscountService:       servicesImplementation.NewDiscountServiceImplementation(r.discountRepository, r.userRepository, lg),
 		InstrumentService:     servicesImplementation.NewInstrumentServiceImplementation(r.instrumentRepository, r.userRepository, lg),
 		UserService:           servicesImplementation.NewUserServiceImplementation(r.userRepository, r.comparisonListRepository, calcDiscountService, lg),
+		OrderService:          servicesImplementation.NewOrderServiceImplementation(r.orderRepository, r.comparisonListRepository),
 	}
 
 	return u
@@ -95,6 +99,7 @@ func (a *App) Run() {
 			menu.ShowMenuItem(5)
 			menu.ShowMenuItem(6)
 			menu.ShowMenuItem(7)
+			menu.ShowMenuItem(15)
 		}
 
 		if adminFuncs {
@@ -226,6 +231,10 @@ func (a *App) Run() {
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(14, "Update discount in Data Base", func() {
 		UpdateDiscount(a, user.Login)
+	}))
+
+	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(15, "Checkout", func() {
+		Checkout(a, user.UserId)
 	}))
 
 	Menu.Display()

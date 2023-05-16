@@ -599,3 +599,12 @@ func UpdateDiscount(a *App, login string) {
 		fmt.Print(res)
 	}
 }
+
+func Checkout(a *App, userid uint64) {
+	id, res := a.handlers.OrderHandler.Create(userid)
+	if res == "0" {
+		fmt.Printf("Order with id %d was successfully created", id)
+	} else {
+		fmt.Print(res)
+	}
+}

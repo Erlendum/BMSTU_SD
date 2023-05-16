@@ -57,7 +57,7 @@ create table store.comparisonLists_instruments (
 create table store.Orders
 (
 	order_id serial primary key,
-	order_time date,
+	order_time datetime,
 	order_price int,
 	order_status text default 'Created',
 	user_id int not null,
