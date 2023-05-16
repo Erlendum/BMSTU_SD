@@ -8,6 +8,7 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { ComparisonListService } from '../../../services/comparisonList.service'
 import InstrumentItemTable from '../../ui/instrument-item-table/InstrumentItemTable'
+import { OrderService } from '../../../services/order.service'
 
 const ComparisonList: FC = () => {
 	const [error, setError] = useState('no error')
@@ -30,6 +31,33 @@ const ComparisonList: FC = () => {
 		}
 	)
 
+	useEffect(() => {
+		if (error !== 'no error') {
+			toast.error('ERROR ' + error, {
+				position: toast.POSITION.BOTTOM_LEFT
+			})
+		}
+	}, [error])
+	const handleCheckout = async (): Promise<void> => {
+		let id: string = ''
+		setError('no error')
+		let isError = false
+		await OrderService.create()
+			.then(data => (id = data))
+			.catch(error => {
+				isError = true
+				if (!error.response) {
+					setError(error.response.data.Error)
+				}
+			})
+		if (!isError) {
+			toast.success(`Order with id ${id} was successfully created`, {
+				position: toast.POSITION.BOTTOM_LEFT
+			})
+			setUpdateQuery(!updateQuery)
+		}
+	}
+
 	const displayComparisonListInstruments = comparisonListInstruments?.map(
 		instrument => {
 			return (
@@ -49,6 +77,13 @@ const ComparisonList: FC = () => {
 			<div className={styles.text}>
 				Total Price: {comparisonList?.TotalPrice}
 			</div>
+			<button
+				className={styles.openBtn}
+				onClick={handleCheckout}
+				hidden={comparisonListInstruments == null}
+			>
+				Checkout
+			</button>
 			<table className={styles.table}>
 				<thead>
 					<tr>
