@@ -54,4 +54,26 @@ create table store.comparisonLists_instruments (
     FOREIGN KEY (instrument_id) references store.Instruments(instrument_id) on delete cascade
 );
 
+create table store.Orders
+(
+	order_id serial primary key,
+	order_time date,
+	order_price int,
+	order_status text default 'Created',
+	user_id int not null,
+	foreign key (user_id) references store.Users(user_id) on delete cascade
+);
+
+create table store.Order_elements
+(
+	order_element_id serial primary key,
+	order_element_amount int,
+	order_element_price int,
+	instrument_id int not null,
+	order_id int not null,
+	FOREIGN KEY (instrument_id) references store.Instruments(instrument_id) on delete cascade,
+	foreign key (order_id) references store.Orders(order_id) on delete cascade
+);
+
+
 
