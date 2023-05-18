@@ -63,7 +63,7 @@ func (a *App) initServices(r *appRepositoryFields) *appServiceFields {
 		DiscountService:       servicesImplementation.NewDiscountServiceImplementation(r.discountRepository, r.userRepository, lg),
 		InstrumentService:     servicesImplementation.NewInstrumentServiceImplementation(r.instrumentRepository, r.userRepository, lg),
 		UserService:           servicesImplementation.NewUserServiceImplementation(r.userRepository, r.comparisonListRepository, calcDiscountService, lg),
-		OrderService:          servicesImplementation.NewOrderServiceImplementation(r.orderRepository, r.comparisonListRepository),
+		OrderService:          servicesImplementation.NewOrderServiceImplementation(r.orderRepository, r.comparisonListRepository, r.userRepository, lg),
 	}
 
 	return u

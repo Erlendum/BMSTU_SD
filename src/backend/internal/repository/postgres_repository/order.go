@@ -2,8 +2,14 @@ package postgres_repository
 
 import (
 	"backend/internal/models"
+	"backend/internal/pkg/errors/repositoryErrors"
+	"backend/internal/pkg/queries"
 	"backend/internal/repository"
+	"database/sql"
+	"errors"
+	"github.com/jinzhu/copier"
 	"github.com/jmoiron/sqlx"
+	"strconv"
 	"time"
 )
 
@@ -51,5 +57,93 @@ func (i *OrderPostgresRepository) CreateOrderElement(element *models.OrderElemen
 		return err
 	}
 
+	return nil
+}
+
+func (i *OrderPostgresRepository) GetList(userId uint64) ([]models.Order, error) {
+	query := `select * from store.orders where user_id = $1`
+
+	var ordersPostges []OrderPostgres
+	var orders []models.Order
+	err := i.db.Select(&ordersPostges, query, userId)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, repositoryErrors.ObjectDoesNotExists
+	} else if err != nil {
+		return nil, err
+	}
+
+	for i := range ordersPostges {
+		order := &models.Order{}
+		err = copier.Copy(order, &ordersPostges[i])
+		if err != nil {
+			return nil, err
+		}
+		orders = append(orders, *order)
+	}
+	return orders, nil
+}
+
+func (i *OrderPostgresRepository) GetListForAll() ([]models.Order, error) {
+	query := `select * from store.orders;`
+
+	var ordersPostgres []OrderPostgres
+	var orders []models.Order
+	err := i.db.Select(&ordersPostgres, query)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, repositoryErrors.ObjectDoesNotExists
+	} else if err != nil {
+		return nil, err
+	}
+
+	for i := range ordersPostgres {
+		order := &models.Order{}
+		err = copier.Copy(order, &ordersPostgres[i])
+		if err != nil {
+			return nil, err
+		}
+		orders = append(orders, *order)
+	}
+	return orders, nil
+}
+
+func (i *OrderPostgresRepository) orderFieldToDBField(field models.OrderField) (string, error) {
+	switch field {
+	case models.OrderFieldUserId:
+		return "user_id", nil
+	case models.OrderFieldPrice:
+		return "order_price", nil
+	case models.OrderFieldTime:
+		return "order_time", nil
+	case models.OrderFieldStatus:
+		return "order_status", nil
+	}
+	return "", repositoryErrors.InvalidField
+}
+
+func (i *OrderPostgresRepository) Update(id uint64, fieldsToUpdate models.OrderFieldsToUpdate) error {
+	updateFields := make(map[string]any, len(fieldsToUpdate))
+	for key, value := range fieldsToUpdate {
+		field, err := i.orderFieldToDBField(key)
+		if err != nil {
+			return err
+		}
+		updateFields[field] = value
+	}
+
+	query, fields := queries.CreateUpdateQuery("store.orders", updateFields)
+
+	fields = append(fields, id)
+	query += ` where order_id = $` + strconv.Itoa(len(fields)) + ";"
+
+	res, err := i.db.Exec(query, fields...)
+	if err != nil {
+		return err
+	}
+	count, _ := res.RowsAffected()
+	if count == 0 || errors.Is(err, sql.ErrNoRows) {
+		return repositoryErrors.ObjectDoesNotExists
+	} else if err != nil {
+		return err
+	}
 	return nil
 }
