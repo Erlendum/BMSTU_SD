@@ -100,6 +100,7 @@ func (a *App) Run() {
 			menu.ShowMenuItem(6)
 			menu.ShowMenuItem(7)
 			menu.ShowMenuItem(15)
+			menu.ShowMenuItem(16)
 		}
 
 		if adminFuncs {
@@ -110,6 +111,7 @@ func (a *App) Run() {
 			menu.ShowMenuItem(12)
 			menu.ShowMenuItem(13)
 			menu.ShowMenuItem(14)
+			menu.ShowMenuItem(17)
 		}
 	})
 	Menu.AddMenuItem(GoConsoleMenu.NewActionItem(0, "Exit menu", func() {}).SetAsExitOption())
@@ -235,6 +237,20 @@ func (a *App) Run() {
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(15, "Checkout", func() {
 		Checkout(a, user.UserId)
+	}))
+
+	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(16, "Orders List", func() {
+		var orders string
+		if user.IsAdmin {
+			orders = a.handlers.OrderHandler.GetListForAll()
+		} else {
+			orders = a.handlers.OrderHandler.GetList(user.UserId)
+		}
+		fmt.Println(orders)
+	}))
+
+	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(17, "Update Order Status", func() {
+		UpdateOrderStatus(a, user.Login)
 	}))
 
 	Menu.Display()

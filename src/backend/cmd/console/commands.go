@@ -608,3 +608,36 @@ func Checkout(a *App, userid uint64) {
 		fmt.Print(res)
 	}
 }
+
+func UpdateOrderStatus(a *App, login string) {
+	fields := models.OrderFieldsToUpdate{}
+	scanner := bufio.NewScanner(os.Stdin)
+
+	fmt.Print("Input id:")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid id")
+		return
+	}
+	id, err := strconv.Atoi(scanner.Text())
+	if err != nil {
+		fmt.Printf("Invalid id")
+		return
+	}
+
+	fmt.Print("Input new status (or press enter): ")
+	if !scanner.Scan() {
+		fmt.Printf("Invalid user id")
+		return
+	}
+	if scanner.Text() != "" {
+		fields[models.OrderFieldStatus] = scanner.Text()
+	}
+
+	res := a.handlers.OrderHandler.Update(uint64(id), login, fields)
+	if res == "0" {
+		fmt.Print("Success")
+	} else {
+		fmt.Print(res)
+	}
+
+}

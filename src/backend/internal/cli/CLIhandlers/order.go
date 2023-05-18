@@ -1,6 +1,7 @@
 package CLIhandlers
 
 import (
+	"backend/internal/models"
 	"backend/internal/services"
 	"log"
 )
@@ -24,4 +25,47 @@ func (h *OrderHandler) Create(userId uint64) (uint64, string) {
 	}
 
 	return res, Response(e)
+}
+
+func (h *OrderHandler) GetList(userId uint64) string {
+
+	e, err := h.service.GetList(userId)
+	if err != nil {
+		log.Println(err)
+		return ErrorResponse(&ErrorModel{
+			Error: err.Error(),
+		})
+	}
+	structure := make(map[string]any)
+	structure["orders"] = e
+
+	return MapResponse(structure)
+}
+
+func (h *OrderHandler) GetListForAll() string {
+
+	e, err := h.service.GetListForAll()
+	if err != nil {
+		log.Println(err)
+		return ErrorResponse(&ErrorModel{
+			Error: err.Error(),
+		})
+	}
+	structure := make(map[string]any)
+	structure["orders"] = e
+
+	return MapResponse(structure)
+}
+
+func (h *OrderHandler) Update(id uint64, login string, fieldsToUpdate models.OrderFieldsToUpdate) string {
+	e := 0
+	err := h.service.Update(id, login, fieldsToUpdate)
+	if err != nil {
+		log.Println(err)
+		return ErrorResponse(&ErrorModel{
+			Error: err.Error(),
+		})
+	}
+
+	return Response(e)
 }
