@@ -17,9 +17,10 @@ const Layout: FC<PropsWithChildren<{ title?: string }>> = ({
 			<div className={styles.layout}>
 				<header>
 					<nav>
-						<h1>MUSIC STORE</h1>
+						{/*<h1>MUSIC STORE</h1>*/}
 						<Link to='/'>Home</Link>
 						<Link to='/discounts'>Discounts</Link>
+						<Link to='/orders'>Orders</Link>
 						<Link to='/comparison_list'>Comparison List</Link>
 						<Link to='/logout'>Logout</Link>
 					</nav>
@@ -34,7 +35,7 @@ const Layout: FC<PropsWithChildren<{ title?: string }>> = ({
 			<div className={styles.layout}>
 				<header>
 					<nav>
-						<h1>MUSIC STORE</h1>
+						{/*<h1>MUSIC STORE</h1>*/}
 						<Link to='/'>Home</Link>
 						<Link to='/discounts'>Discounts</Link>
 						<Link to='/register'>Register</Link>
