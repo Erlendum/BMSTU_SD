@@ -69,3 +69,18 @@ func (h *OrderHandler) Update(id uint64, login string, fieldsToUpdate models.Ord
 
 	return Response(e)
 }
+
+func (h *OrderHandler) GetOrderElements(orderId uint64) string {
+
+	e, err := h.service.GetOrderElements(orderId)
+	if err != nil {
+		log.Println(err)
+		return ErrorResponse(&ErrorModel{
+			Error: err.Error(),
+		})
+	}
+	structure := make(map[string]any)
+	structure["order_elements"] = e
+
+	return MapResponse(structure)
+}

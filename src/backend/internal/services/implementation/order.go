@@ -153,3 +153,19 @@ func (o *orderServiceImplementation) checkCanUserChangeOrder(login string) (bool
 	}
 	return false, nil
 }
+
+func (o *orderServiceImplementation) GetOrderElements(id uint64) ([]models.OrderElement, error) {
+	fields := map[string]interface{}{"order_id": id}
+
+	orders, err := o.orderRepository.GetOrderElements(id)
+	if err != nil && err == repositoryErrors.ObjectDoesNotExists {
+		o.logger.WithFields(fields).Error(serviceErrors.OrdersListGetFailed.Error() + serviceErrors.OrdersDoesNotExists.Error())
+		return nil, serviceErrors.OrdersDoesNotExists
+	} else if err != nil {
+		o.logger.WithFields(fields).Error(serviceErrors.OrdersListGetFailed.Error() + err.Error())
+		return nil, err
+	}
+
+	o.logger.WithFields(fields).Info("get order elements completed")
+	return orders, nil
+}

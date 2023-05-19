@@ -9,6 +9,7 @@ import (
 	"backend/internal/repository/postgres_repository"
 	"backend/internal/services"
 	servicesImplementation "backend/internal/services/implementation"
+	"encoding/json"
 	"fmt"
 	"github.com/jinzhu/copier"
 	"github.com/lukewarlow/GoConsoleMenu"
@@ -240,13 +241,24 @@ func (a *App) Run() {
 	}))
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(16, "Orders List", func() {
-		var orders string
+		var orderStr string
 		if user.IsAdmin {
-			orders = a.handlers.OrderHandler.GetListForAll()
+			orderStr = a.handlers.OrderHandler.GetListForAll()
 		} else {
-			orders = a.handlers.OrderHandler.GetList(user.UserId)
+			orderStr = a.handlers.OrderHandler.GetList(user.UserId)
 		}
-		fmt.Println(orders)
+		var ordersMap map[string][]models.Order
+		err := json.Unmarshal([]byte(orderStr), &ordersMap)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		orders := ordersMap["orders"]
+		fmt.Println(orderStr)
+		for i := range orders {
+			orderElements := a.handlers.OrderHandler.GetOrderElements(orders[i].OrderId)
+			fmt.Println(orderElements)
+		}
 	}))
 
 	Menu.AddHiddenMenuItem(GoConsoleMenu.NewActionItem(17, "Update Order Status", func() {

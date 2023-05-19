@@ -61,7 +61,7 @@ func (i *OrderPostgresRepository) CreateOrderElement(element *models.OrderElemen
 }
 
 func (i *OrderPostgresRepository) GetList(userId uint64) ([]models.Order, error) {
-	query := `select * from store.orders where user_id = $1`
+	query := `select * from store.orders where user_id = $1 order by order_id`
 
 	var ordersPostges []OrderPostgres
 	var orders []models.Order
@@ -84,7 +84,7 @@ func (i *OrderPostgresRepository) GetList(userId uint64) ([]models.Order, error)
 }
 
 func (i *OrderPostgresRepository) GetListForAll() ([]models.Order, error) {
-	query := `select * from store.orders;`
+	query := `select * from store.orders order by order_id;`
 
 	var ordersPostgres []OrderPostgres
 	var orders []models.Order
@@ -146,4 +146,27 @@ func (i *OrderPostgresRepository) Update(id uint64, fieldsToUpdate models.OrderF
 		return err
 	}
 	return nil
+}
+
+func (i *OrderPostgresRepository) GetOrderElements(id uint64) ([]models.OrderElement, error) {
+	query := `select * from store.order_elements where order_id = $1 order by order_id;`
+
+	var orderElementsPostgres []OrderElementPostgres
+	var orderElements []models.OrderElement
+	err := i.db.Select(&orderElementsPostgres, query, id)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, repositoryErrors.ObjectDoesNotExists
+	} else if err != nil {
+		return nil, err
+	}
+
+	for i := range orderElementsPostgres {
+		orderElement := &models.OrderElement{}
+		err = copier.Copy(orderElement, &orderElementsPostgres[i])
+		if err != nil {
+			return nil, err
+		}
+		orderElements = append(orderElements, *orderElement)
+	}
+	return orderElements, nil
 }

@@ -161,3 +161,37 @@ func (h *OrderHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	sendResponse(w, http.StatusOK, e)
 }
+
+func (h *OrderHandler) GetOrderElements(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "*")
+	if r.Method != "GET" {
+		sendErrorResponse(w, &ErrorModel{
+			Error:          handlerErrors.GetExpectedError.Error(),
+			HTTPStatusCode: http.StatusMethodNotAllowed,
+		})
+		return
+	}
+
+	strId := r.URL.Query().Get("order_id")
+	id, err := strconv.Atoi(strId)
+	if err != nil {
+		sendErrorResponse(w, &ErrorModel{
+			Error:          err.Error(),
+			HTTPStatusCode: http.StatusServiceUnavailable,
+		})
+	}
+	e, err := h.service.GetOrderElements(uint64(id))
+	if err != nil {
+		sendErrorResponse(w, &ErrorModel{
+			Error:          err.Error(),
+			HTTPStatusCode: http.StatusServiceUnavailable,
+		})
+		return
+	}
+
+	structure := make(map[string]any)
+	structure["order_elements"] = e
+	sendMapResponse(w, http.StatusOK, structure)
+}

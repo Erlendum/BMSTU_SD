@@ -25,5 +25,6 @@ func NewRouter(h *handlers.Handlers) *http.ServeMux {
 	mux.HandleFunc("/orders", http.HandlerFunc(h.OrderHandler.GetList))
 	mux.HandleFunc("/ordersForAll", http.HandlerFunc(h.OrderHandler.GetListForAll))
 	mux.HandleFunc("/update_order", http.HandlerFunc(h.OrderHandler.Update))
+	mux.HandleFunc("/order_elements", http.HandlerFunc(h.OrderHandler.GetOrderElements))
 	return mux
 }

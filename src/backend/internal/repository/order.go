@@ -8,4 +8,5 @@ type OrderRepository interface {
 	GetList(userId uint64) ([]models.Order, error)
 	GetListForAll() ([]models.Order, error)
 	Update(id uint64, fieldsToUpdate models.OrderFieldsToUpdate) error
+	GetOrderElements(id uint64) ([]models.OrderElement, error)
 }
