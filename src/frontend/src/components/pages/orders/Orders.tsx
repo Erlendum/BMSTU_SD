@@ -7,14 +7,19 @@ import InstrumentItemTable from '../../ui/instrument-item-table/InstrumentItemTa
 import Layout from '../../ui/layout/Layout'
 import styles from '../orders/Orders.module.scss'
 import OrderItem from '../../ui/order-item/OrderItem'
+import OrderElementItem from '../../ui/orderElement-item/OrderElementItem'
+import orderElementItem from '../../ui/orderElement-item/OrderElementItem'
+import { IOrder } from '../../../types/order.interface'
 
 const Orders: FC = () => {
-	const [error, setError] = useState('no error')
 	let isAdmin =
 		UserService.getCurrentIsAdmin() != null &&
 		UserService.getCurrentIsAdmin() == 'true'
 	const [updateQuery, setUpdateQuery] =
 		useState(false)
+	const [orderId, setOrderId] = useState(-1)
+
+
 	const { data: orders, isLoading } = useQuery(
 		['orders', updateQuery],
 		() => !isAdmin ? OrderService.getList() : OrderService.getListForAll(),
@@ -23,43 +28,16 @@ const Orders: FC = () => {
 		}
 	)
 
-	useEffect(() => {
-		if (error !== 'no error') {
-			toast.error('ERROR ' + error, {
-				position: toast.POSITION.BOTTOM_LEFT
-			})
-		}
-	}, [error])
-	const handleCheckout = async (): Promise<void> => {
-		let id: string = ''
-		setError('no error')
-		let isError = false
-		await OrderService.create()
-			.then(data => (id = data))
-			.catch(error => {
-				isError = true
-				if (!error.response) {
-					setError(error.response.data.Error)
-				}
-			})
-		if (!isError) {
-			toast.success(`Order with id ${id} was successfully created`, {
-				position: toast.POSITION.BOTTOM_LEFT
-			})
-			setUpdateQuery(!updateQuery)
-		}
-	}
-
 	const displayOrders = orders?.map(
-		order => {
+		(order: IOrder) => {
 			return (
 				<OrderItem
 					updateQuery={updateQuery}
 					setUpdateQuery={setUpdateQuery}
 					order={order}
 					key={order.OrderId}
-				/>
-			)
+				/>)
+
 		}
 	)
 
@@ -73,6 +51,9 @@ const Orders: FC = () => {
 					<th className={styles.textLeft}>Price</th>
 					<th className={styles.textLeft}>Status</th>
 					<th hidden={!isAdmin} className={styles.textLeft}>User Id</th>
+					<th className={styles.textLeft}>
+						Links
+					</th>
 				</tr>
 				</thead>
 				<tbody className='table-hover'>

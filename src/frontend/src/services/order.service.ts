@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { UserService } from './user.service'
 import { IInstrumentsResponse } from '../types/instrument.interface'
-import { IOrder, IOrdersResponse } from '../types/order.interface'
+import { IOrder, IOrderElementsResponse, IOrdersResponse } from '../types/order.interface'
 import { IDiscount } from '../types/discount.interface'
 
 export const OrderService = {
@@ -31,5 +31,12 @@ export const OrderService = {
 			params: { login: UserService.getCurrentLogin() }
 		})
 		return res.data
+	},
+
+	async getOrderElements(id: number) {
+		const response = await axios.get<IOrderElementsResponse>('/order_elements', {
+			params: {order_id: id}
+		})
+		return response.data
 	}
 }
