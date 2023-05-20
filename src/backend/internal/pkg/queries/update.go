@@ -1,11 +1,12 @@
 package queries
 
 import (
+	"go.mongodb.org/mongo-driver/bson"
 	"strconv"
 	"strings"
 )
 
-func CreateUpdateQuery(entityName string, fields map[string]any) (string, []any) {
+func CreatePostgresUpdateQuery(entityName string, fields map[string]any) (string, []any) {
 	query := `update ` + entityName + ` set `
 
 	if len(fields) > 1 {
@@ -36,4 +37,12 @@ func CreateUpdateQuery(entityName string, fields map[string]any) (string, []any)
 	}
 
 	return query, values
+}
+
+func CreateMongoUpdateQuery(fields map[string]any) bson.D {
+	values := bson.D{}
+	for key, value := range fields {
+		values = append(values, bson.E{Key: key, Value: value})
+	}
+	return bson.D{{"$set", values}}
 }

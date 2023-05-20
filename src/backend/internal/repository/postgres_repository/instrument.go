@@ -71,7 +71,7 @@ func (i *InstrumentPostgresRepository) Update(id uint64, fieldsToUpdate models.I
 		updateFields[field] = value
 	}
 
-	query, fields := queries.CreateUpdateQuery("store.instruments", updateFields)
+	query, fields := queries.CreatePostgresUpdateQuery("store.instruments", updateFields)
 
 	fields = append(fields, id)
 	query += ` where instrument_id = $` + strconv.Itoa(len(fields)) + ";"

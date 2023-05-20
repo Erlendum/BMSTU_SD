@@ -7,10 +7,12 @@ import (
 
 type Config struct {
 	Postgres flags.PostgresFlags `mapstructure:"postgres"`
+	Mongo    flags.MongoFlags    `mapstructure:"mongo"`
 	Address  string              `mapstructure:"address"`
 	Port     string              `mapstructure:"port"`
 	LogPath  string              `mapstructure:"log_path"`
 	LogLevel string              `mapstructure:"log_level"`
+	Db       string              `mapstructure:"db"`
 }
 
 func (c *Config) ParseConfig(configFileName, pathToConfig string) error {

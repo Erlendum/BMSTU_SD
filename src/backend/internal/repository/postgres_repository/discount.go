@@ -71,7 +71,7 @@ func (i *DiscountPostgresRepository) Update(id uint64, fieldsToUpdate models.Dis
 		updateFields[field] = value
 	}
 
-	query, fields := queries.CreateUpdateQuery("store.discounts", updateFields)
+	query, fields := queries.CreatePostgresUpdateQuery("store.discounts", updateFields)
 
 	fields = append(fields, id)
 	query += ` where discount_id = $` + strconv.Itoa(len(fields)) + ";"

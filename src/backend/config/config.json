@@ -7,8 +7,14 @@
     "dbname": "MusicStore"
   },
 
+  "mongo": {
+    "uri": "mongodb://localhost:27017",
+    "dbname": "MusicStore"
+  },
+
   "port": ":8080",
   "address": "0.0.0.0",
   "log_path": "log.log",
-  "log_level": "TRACE"
+  "log_level": "TRACE",
+  "db": "mongo"
 }

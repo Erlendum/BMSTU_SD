@@ -7,6 +7,7 @@ import (
 	"backend/internal/network/handlers"
 	"backend/internal/pkg/logger"
 	"backend/internal/repository"
+	"backend/internal/repository/mongo_repository"
 	"backend/internal/repository/postgres_repository"
 	"backend/internal/services"
 	servicesImplementation "backend/internal/services/implementation"
@@ -47,9 +48,13 @@ type appServiceFields struct {
 	OrderService          services.OrderService
 }
 
-func (a *App) initRepositories() *appRepositoryFields {
-	fields := postgres_repository.CreatePostgresRepositoryFields("config.json", "./config")
-	a.config = &fields.Config
+const (
+	ConfigFileName = "config.json"
+	ConfigFilePath = "./config"
+)
+
+func (a *App) initPostgresRepositories() *appRepositoryFields {
+	fields := postgres_repository.CreatePostgresRepositoryFields(ConfigFileName, ConfigFilePath)
 	f := &appRepositoryFields{
 		comparisonListRepository: postgres_repository.CreateComparisonListPostgresRepository(fields),
 		discountRepository:       postgres_repository.CreateDiscountPostgresRepository(fields),
@@ -59,6 +64,24 @@ func (a *App) initRepositories() *appRepositoryFields {
 	}
 
 	return f
+}
+
+func (a *App) initMongoRepositories() *appRepositoryFields {
+	fields := mongo_repository.CreateMongoRepositoryFields(ConfigFileName, ConfigFilePath)
+	f := &appRepositoryFields{
+		instrumentRepository:     mongo_repository.CreateInstrumentMongoRepository(fields),
+		userRepository:           mongo_repository.CreateUserMongoRepository(fields),
+		comparisonListRepository: mongo_repository.CreateComparisonListMongoRepository(fields),
+		orderRepository:          mongo_repository.CreateOrderMongoRepository(fields),
+		discountRepository:       mongo_repository.CreateDiscountMongoRepository(fields),
+	}
+
+	return f
+}
+
+var initRepositoriesMap = map[string]func(*App) *appRepositoryFields{
+	"postgres": (*App).initPostgresRepositories,
+	"mongo":    (*App).initMongoRepositories,
 }
 
 func (a *App) initServices(r *appRepositoryFields) *appServiceFields {
@@ -78,7 +101,14 @@ func (a *App) initServices(r *appRepositoryFields) *appServiceFields {
 }
 
 func (a *App) Init() {
-	a.repositories = a.initRepositories()
+	var c config.Config
+	err := c.ParseConfig(ConfigFileName, ConfigFilePath)
+	if err != nil {
+		return
+	}
+	a.config = &c
+
+	a.repositories = initRepositoriesMap[a.config.Db](a)
 	a.services = a.initServices(a.repositories)
 	handlerServices := handlers.HandlersServicesFields{}
 	copier.Copy(&handlerServices, a.services)

@@ -153,7 +153,7 @@ func (i *ComparisonListPostgresRepository) Update(id uint64, fieldsToUpdate mode
 		updateFields[field] = value
 	}
 
-	query, fields := queries.CreateUpdateQuery("store.comparisonLists", updateFields)
+	query, fields := queries.CreatePostgresUpdateQuery("store.comparisonLists", updateFields)
 
 	fields = append(fields, id)
 	query += ` where comparisonList_id = $` + strconv.Itoa(len(fields)) + ";"

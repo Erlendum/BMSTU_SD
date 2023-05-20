@@ -130,7 +130,7 @@ func (i *OrderPostgresRepository) Update(id uint64, fieldsToUpdate models.OrderF
 		updateFields[field] = value
 	}
 
-	query, fields := queries.CreateUpdateQuery("store.orders", updateFields)
+	query, fields := queries.CreatePostgresUpdateQuery("store.orders", updateFields)
 
 	fields = append(fields, id)
 	query += ` where order_id = $` + strconv.Itoa(len(fields)) + ";"
