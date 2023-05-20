@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  mongodb:
+    container_name: mongodb
+    build: ./
+    volumes:
+      - ./data/mongodata:/data/db
+      - ./data:/data/data
+      - ./init/01_mongo-init.js:/docker-entrypoint-initdb.d/01_mongo-init.js:ro
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=erlendum
+      - MONGODB_INITDB_ROOT_PASSWORD=parasha
+      - MONGODB_INITDB_DATABASE=MusicStore

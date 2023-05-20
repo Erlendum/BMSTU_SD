@@ -1,0 +1,2 @@
+discount_id,instrument_id,user_id,discount_amount,discount_type,discount_date_begin,discount_date_end
+1,1,1,10,Percent,2003-01-22 15:04:05 -0700 MST,2024-01-22 15:04:05 -0700 MST
