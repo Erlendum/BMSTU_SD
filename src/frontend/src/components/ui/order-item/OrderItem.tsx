@@ -38,6 +38,9 @@ const OrderItem: FC<{
 	useEffect(() => {
 		if (order.Status != status) {
 			setError('no error')
+			order.UserId = 0
+			order.Price = 0
+			order.Time = "2006-01-02T15:04:05Z"
 			order.Status = status
 			OrderService.update(order).catch(error => {
 				if (error.response) {
@@ -48,13 +51,22 @@ const OrderItem: FC<{
 		}
 	}, [status])
 
-	const { data: order_elements, isLoading } = useQuery(
+	const { data: order_elements,  refetch} = useQuery(
 		['order_elements'],
 		() => OrderService.getOrderElements(order.OrderId),
 		{
-			select: ({ order_elements }) => order_elements
+			select: ({ order_elements }) => order_elements,
+			refetchOnWindowFocus: true,
+			staleTime: 0,
+			cacheTime: 0,
+			refetchInterval: 0,
 		}
 	)
+
+	const handleClick = () => {
+		refetch();
+		setOrderInfoModalActive(true)
+	};
 
 	const displayStatus = isAdmin ? <select
 		form="dorama-form"
@@ -85,7 +97,7 @@ const OrderItem: FC<{
 				<a
 					className={styles.links}
 					href='javascript:void(0);'
-					onClick={() => setOrderInfoModalActive(true)}
+					onClick={handleClick}
 				>
 					<i className='fa fa-info-circle'></i>
 				</a>
