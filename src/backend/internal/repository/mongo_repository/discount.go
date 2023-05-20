@@ -109,6 +109,12 @@ func (i *DiscountMongoRepository) discountFieldToDBField(field models.DiscountFi
 
 func (i *DiscountMongoRepository) Update(id uint64, fieldsToUpdate models.DiscountFieldsToUpdate) error {
 	filter := bson.D{{"discount_id", id}}
+	if fieldsToUpdate[models.DiscountFieldDateBegin] != nil {
+		fieldsToUpdate[models.DiscountFieldDateBegin] = fieldsToUpdate[models.DiscountFieldDateBegin].(time.Time).Format(LayoutDate)
+	}
+	if fieldsToUpdate[models.DiscountFieldDateEnd] != nil {
+		fieldsToUpdate[models.DiscountFieldDateEnd] = fieldsToUpdate[models.DiscountFieldDateEnd].(time.Time).Format(LayoutDate)
+	}
 	updateFields := make(map[string]any, len(fieldsToUpdate))
 	for key, value := range fieldsToUpdate {
 		field, err := i.discountFieldToDBField(key)
