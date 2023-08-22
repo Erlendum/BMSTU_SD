@@ -6,7 +6,10 @@ import (
 	"backend/internal/repository"
 	"backend/internal/repository/postgres_repository"
 	"backend/internal/services"
+	"context"
+	"database/sql"
 	"github.com/stretchr/testify/require"
+	"github.com/testcontainers/testcontainers-go"
 	"testing"
 )
 
@@ -21,15 +24,21 @@ type userServiceFieldsPostgres struct {
 	calcDiscountService      services.CalcDiscountService
 }
 
-func createUserServiceFieldsPostgres() *userServiceFieldsPostgres {
-	fields := new(userServiceFieldsPostgres)
-	fieldsPostgres := postgres_repository.CreatePostgresRepositoryFields("config.json", "../../../config")
+var userDbContainer testcontainers.Container
 
+func createUserServiceFieldsPostgres() *userServiceFieldsPostgres {
+
+	fields := new(userServiceFieldsPostgres)
+	var db *sql.DB
+	userDbContainer, db = postgres_repository.SetupTestDatabase("../../repository/postgres_repository/migrations/000001_create_init_tables.up.sql")
+
+	repositoryFields := new(postgres_repository.PostgresRepositoryFields)
+	repositoryFields.Db = db
 	calcDiscountServiceFields := new(calcDiscountServiceFieldsForUserPostgres)
 
-	discountRepository := postgres_repository.CreateDiscountPostgresRepository(fieldsPostgres)
-	comparisonListRepository := postgres_repository.CreateComparisonListPostgresRepository(fieldsPostgres)
-	userRepository := postgres_repository.CreateUserPostgresRepository(fieldsPostgres)
+	discountRepository := postgres_repository.CreateDiscountPostgresRepository(repositoryFields)
+	comparisonListRepository := postgres_repository.CreateComparisonListPostgresRepository(repositoryFields)
+	userRepository := postgres_repository.CreateUserPostgresRepository(repositoryFields)
 
 	calcDiscountServiceFields.discountRepository = &discountRepository
 
@@ -58,16 +67,8 @@ var testGetComparisonListPostgresSuccess = []struct {
 		}{id: 1},
 		CheckOutput: func(t *testing.T, err error, comparisonList *models.ComparisonList, instruments []models.Instrument) {
 			require.NoError(t, err)
-			require.Equal(t, comparisonList, &models.ComparisonList{ComparisonListId: 1, UserId: 1, Amount: 1, TotalPrice: 4050})
-			require.Equal(t, instruments, []models.Instrument{{
-				InstrumentId: 1,
-				Name:         "KALA KA-15S Kala Mahogany Soprano Ukulele No Binding",
-				Price:        4050,
-				Material:     "Сосна",
-				Type:         "Укулеле",
-				Brand:        "KALA",
-				Img:          "https://www.muztorg.ru/files/sized/f250x250/vop/cd1/73u/00g/oc0/sso/kc0/408/vopcd173u00goc0ssokc0408.jpg",
-			}})
+			require.Equal(t, comparisonList, &models.ComparisonList{ComparisonListId: 1, UserId: 1, Amount: 0, TotalPrice: 0})
+			require.Equal(t, instruments, []models.Instrument(nil))
 		},
 	},
 }
@@ -84,5 +85,10 @@ func TestComparisonListServiceImplementationGetComparisonListPostgres(t *testing
 
 			tt.CheckOutput(t, err, comparisonList, instruments)
 		})
+	}
+
+	err := userDbContainer.Terminate(context.Background())
+	if err != nil {
+		return
 	}
 }

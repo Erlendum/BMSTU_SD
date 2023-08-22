@@ -3,8 +3,13 @@ package postgres_repository
 import (
 	"backend/config"
 	"backend/internal/repository"
+	"context"
 	"database/sql"
+	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/wait"
+	"os"
 )
 
 type PostgresRepositoryFields struct {
@@ -53,4 +58,50 @@ func CreateOrderPostgresRepository(fields *PostgresRepositoryFields) repository.
 	dbx := sqlx.NewDb(fields.Db, "pgx")
 
 	return NewOrderPostgresRepository(dbx)
+}
+
+func SetupTestDatabase(migrationFilePath string) (testcontainers.Container, *sql.DB) {
+	containerReq := testcontainers.ContainerRequest{
+		Image:        "postgres:latest",
+		ExposedPorts: []string{"5432/tcp"},
+		WaitingFor:   wait.ForListeningPort("5432/tcp"),
+		Env: map[string]string{
+			"POSTGRES_DB":       "testdb",
+			"POSTGRES_PASSWORD": "postgres",
+			"POSTGRES_USER":     "postgres",
+		},
+	}
+
+	dbContainer, _ := testcontainers.GenericContainer(
+		context.Background(),
+		testcontainers.GenericContainerRequest{
+			ContainerRequest: containerReq,
+			Started:          true,
+		})
+
+	host, _ := dbContainer.Host(context.Background())
+	port, _ := dbContainer.MappedPort(context.Background(), "5432")
+
+	dsnPGConn := fmt.Sprintf("host=%s port=%d user=postgres password=postgres dbname=testdb sslmode=disable", host, port.Int())
+	db, err := sql.Open("pgx", dsnPGConn)
+	if err != nil {
+		return dbContainer, nil
+	}
+
+	err = db.Ping()
+	if err != nil {
+		return dbContainer, nil
+	}
+	db.SetMaxOpenConns(10)
+
+	text, err := os.ReadFile(migrationFilePath)
+	if err != nil {
+		return dbContainer, nil
+	}
+
+	if _, err := db.Exec(string(text)); err != nil {
+		return dbContainer, nil
+	}
+
+	return dbContainer, db
 }

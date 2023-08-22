@@ -3,7 +3,9 @@ package postgres_repository
 import (
 	"backend/internal/models"
 	"backend/internal/pkg/errors/repositoryErrors"
+	"context"
 	"github.com/stretchr/testify/require"
+	"github.com/testcontainers/testcontainers-go"
 	"math/rand"
 	"testing"
 	"time"
@@ -49,8 +51,16 @@ func TestInstrumentPostgresRepositoryDelete(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryDeleteSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 			var id uint64 = 0
 			fields.Db.Exec("insert into store.instruments (instrument_id, instrument_name, instrument_price, instrument_material, instrument_type, instrument_brand, instrument_img) values ($1, $2, $3, $4, $5, $6, $7)",
@@ -65,7 +75,16 @@ func TestInstrumentPostgresRepositoryDelete(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryDeleteFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
+
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
@@ -98,7 +117,16 @@ func TestInstrumentPostgresRepositoryCreate(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryCreateSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
+
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
@@ -154,7 +182,16 @@ func TestInstrumentPostgresRepositoryUpdate(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryUpdateSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
+
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
@@ -172,7 +209,16 @@ func TestInstrumentPostgresRepositoryUpdate(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryUpdateFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
+
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
@@ -225,7 +271,16 @@ func TestInstrumentPostgresRepositoryGet(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryGetSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
+
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
@@ -243,8 +298,16 @@ func TestInstrumentPostgresRepositoryGet(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryGetFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
 			_, err := instrumentRepository.Get(tt.InputData.instrumentId)
@@ -274,7 +337,16 @@ func TestInstrumentPostgresRepositoryGetList(t *testing.T) {
 	for _, tt := range testInstrumentPostgresRepositoryGetListSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
+
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 

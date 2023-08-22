@@ -5,7 +5,10 @@ import (
 	"backend/internal/repository"
 	"backend/internal/repository/postgres_repository"
 	"backend/internal/services"
+	"context"
+	"database/sql"
 	"github.com/stretchr/testify/require"
+	"github.com/testcontainers/testcontainers-go"
 	"testing"
 )
 
@@ -14,10 +17,16 @@ type comparisonListServiceFieldsPostgres struct {
 	instrumentRepository     *repository.InstrumentRepository
 }
 
+var comparisonListDbContainer testcontainers.Container
+
 func createComparisonListServiceFieldsPostgres() *comparisonListServiceFieldsPostgres {
 	fields := new(comparisonListServiceFieldsPostgres)
 
-	repositoryFields := postgres_repository.CreatePostgresRepositoryFields("config.json", "../../../config")
+	var db *sql.DB
+	comparisonListDbContainer, db = postgres_repository.SetupTestDatabase("../../repository/postgres_repository/migrations/000001_create_init_tables.up.sql")
+
+	repositoryFields := new(postgres_repository.PostgresRepositoryFields)
+	repositoryFields.Db = db
 	instrumentRepository := postgres_repository.CreateInstrumentPostgresRepository(repositoryFields)
 	comparisonListRepository := postgres_repository.CreateComparisonListPostgresRepository(repositoryFields)
 
@@ -51,7 +60,7 @@ var testAddInstrumentPostgresSuccess = []struct {
 }
 
 func TestComparisonListServiceImplementationAddInstrumentPostgres(t *testing.T) {
-	for _, tt := range testAddInstrumentSuccess {
+	for _, tt := range testAddInstrumentPostgresSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
 			fields := createComparisonListServiceFieldsPostgres()
@@ -63,5 +72,9 @@ func TestComparisonListServiceImplementationAddInstrumentPostgres(t *testing.T) 
 
 			tt.CheckOutput(t, err)
 		})
+	}
+	err := comparisonListDbContainer.Terminate(context.Background())
+	if err != nil {
+		return
 	}
 }

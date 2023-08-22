@@ -3,7 +3,9 @@ package postgres_repository
 import (
 	"backend/internal/models"
 	"backend/internal/pkg/errors/repositoryErrors"
+	"context"
 	"github.com/stretchr/testify/require"
+	"github.com/testcontainers/testcontainers-go"
 	"math/rand"
 	"testing"
 	"time"
@@ -49,8 +51,16 @@ func TestDiscountPostgresRepositoryDelete(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryDeleteSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			discountRepository := CreateDiscountPostgresRepository(fields)
 
 			fields.Db.Exec("insert into store.discounts (discount_id, instrument_id, user_id, discount_amount, discount_type, discount_date_begin, discount_date_end) values ($1, $2, $3, $4, $5, $6, $7)",
@@ -65,8 +75,16 @@ func TestDiscountPostgresRepositoryDelete(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryDeleteFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			discountRepository := CreateDiscountPostgresRepository(fields)
 
 			err := discountRepository.Delete(tt.InputData.discountId)
@@ -98,8 +116,16 @@ func TestDiscountPostgresRepositoryCreate(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryCreateSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			discountRepository := CreateDiscountPostgresRepository(fields)
 			discountRepository.Delete(tt.InputData.discount.DiscountId)
 			err := discountRepository.Create(tt.InputData.discount)
@@ -155,8 +181,16 @@ func TestDiscountPostgresRepositoryUpdate(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryUpdateSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			discountRepository := CreateDiscountPostgresRepository(fields)
 
 			var nilTime time.Time
@@ -174,8 +208,16 @@ func TestDiscountPostgresRepositoryUpdate(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryUpdateFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			discountRepository := CreateDiscountPostgresRepository(fields)
 
 			err := discountRepository.Update(tt.InputData.discountId, tt.InputData.fieldsToUpdate)
@@ -227,8 +269,16 @@ func TestDiscountPostgresRepositoryGet(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryGetSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			discountRepository := CreateDiscountPostgresRepository(fields)
 			var nilTime time.Time
 			fields.Db.Exec("insert into store.discounts (discount_id, instrument_id, user_id, discount_amount, discount_type, discount_date_begin, discount_date_end) values ($1, $2, $3, $4, $5, $6, $7)",
@@ -245,8 +295,16 @@ func TestDiscountPostgresRepositoryGet(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryGetFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			instrumentRepository := CreateInstrumentPostgresRepository(fields)
 
 			_, err := instrumentRepository.Get(tt.InputData.discountId)
@@ -276,8 +334,16 @@ func TestDiscountPostgresRepositoryGetList(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryGetListSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			discountRepository := CreateDiscountPostgresRepository(fields)
 
 			_, err := discountRepository.GetList()
@@ -311,8 +377,16 @@ func TestDiscountPostgresRepositoryGetSpecificList(t *testing.T) {
 	for _, tt := range testDiscountPostgresRepositoryGetSpecificListSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			discountRepository := CreateDiscountPostgresRepository(fields)
 
 			_, err := discountRepository.GetSpecificList(tt.InputData.instrumentId, tt.InputData.userId)

@@ -2,7 +2,9 @@ package postgres_repository
 
 import (
 	"backend/internal/models"
+	"context"
 	"github.com/stretchr/testify/require"
+	"github.com/testcontainers/testcontainers-go"
 	"testing"
 	"time"
 )
@@ -42,7 +44,7 @@ var testUserPostgresRepositoryGetFailed = []struct {
 }{
 
 	{
-		TestName: "instrument does not exists",
+		TestName: "user does not exists",
 		InputData: struct {
 			login string
 		}{login: "ha"},
@@ -56,8 +58,16 @@ func TestUserPostgresRepositoryGet(t *testing.T) {
 	for _, tt := range testUserPostgresRepositoryGetSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			userRepository := CreateUserPostgresRepository(fields)
 
 			user, err := userRepository.Get(tt.InputData.login)
@@ -69,8 +79,16 @@ func TestUserPostgresRepositoryGet(t *testing.T) {
 	for _, tt := range testUserPostgresRepositoryGetFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			userRepository := CreateUserPostgresRepository(fields)
 
 			_, err := userRepository.Get(tt.InputData.login)
@@ -115,7 +133,7 @@ var testUserPostgresRepositoryGetByIdFailed = []struct {
 }{
 
 	{
-		TestName: "instrument does not exists",
+		TestName: "user does not exists",
 		InputData: struct {
 			id uint64
 		}{id: 82828},
@@ -129,8 +147,16 @@ func TestUserPostgresRepositoryGetById(t *testing.T) {
 	for _, tt := range testUserPostgresRepositoryGetByIdSuccess {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			userRepository := CreateUserPostgresRepository(fields)
 
 			user, err := userRepository.GetById(tt.InputData.id)
@@ -142,8 +168,16 @@ func TestUserPostgresRepositoryGetById(t *testing.T) {
 	for _, tt := range testUserPostgresRepositoryGetByIdFailed {
 		tt := tt
 		t.Run(tt.TestName, func(t *testing.T) {
-			fields := CreatePostgresRepositoryFields("config.json", "../../../config")
+			dbContainer, db := SetupTestDatabase("./migrations/000001_create_init_tables.up.sql")
+			defer func(dbContainer testcontainers.Container, ctx context.Context) {
+				err := dbContainer.Terminate(ctx)
+				if err != nil {
+					return
+				}
+			}(dbContainer, context.Background())
 
+			fields := new(PostgresRepositoryFields)
+			fields.Db = db
 			userRepository := CreateUserPostgresRepository(fields)
 
 			_, err := userRepository.GetById(tt.InputData.id)
