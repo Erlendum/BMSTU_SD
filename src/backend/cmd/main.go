@@ -1,8 +1,8 @@
 package main
 
 import (
-	"backend/cmd/console"
-	"backend/cmd/modes"
+	"backend/cmd/cli"
+	"backend/cmd/http-server"
 	"flag"
 )
 
@@ -13,10 +13,10 @@ func main() {
 
 	switch *mode {
 	case "cli":
-		app := console.App{}
+		app := cli.App{}
 		app.Run()
 	case "http-server":
-		app := modes.App{}
+		app := http_server.App{}
 		app.Run()
 	}
 }

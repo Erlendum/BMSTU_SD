@@ -1,7 +1,7 @@
-package modes
+package http_server
 
 import (
-	"backend/cmd/modes/flags"
+	"backend/cmd/flags"
 	"backend/config"
 	"backend/internal/network"
 	"backend/internal/network/handlers"

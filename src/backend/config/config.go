@@ -1,18 +1,18 @@
 package config
 
 import (
-	"backend/cmd/modes/flags"
+	my_flags "backend/cmd/flags"
 	"github.com/spf13/viper"
 )
 
 type Config struct {
-	Postgres flags.PostgresFlags `mapstructure:"postgres"`
-	Mongo    flags.MongoFlags    `mapstructure:"mongo"`
-	Address  string              `mapstructure:"address"`
-	Port     string              `mapstructure:"port"`
-	LogPath  string              `mapstructure:"log_path"`
-	LogLevel string              `mapstructure:"log_level"`
-	Db       string              `mapstructure:"db"`
+	Postgres my_flags.PostgresFlags `mapstructure:"postgres"`
+	Mongo    my_flags.MongoFlags    `mapstructure:"mongo"`
+	Address  string                 `mapstructure:"address"`
+	Port     string                 `mapstructure:"port"`
+	LogPath  string                 `mapstructure:"log_path"`
+	LogLevel string                 `mapstructure:"log_level"`
+	Db       string                 `mapstructure:"db"`
 }
 
 func (c *Config) ParseConfig(configFileName, pathToConfig string) error {
