@@ -55,6 +55,9 @@ const (
 
 func (a *App) initPostgresRepositories() *appRepositoryFields {
 	fields := postgres_repository.CreatePostgresRepositoryFields(ConfigFileName, ConfigFilePath)
+	if fields == nil {
+		return nil
+	}
 	f := &appRepositoryFields{
 		comparisonListRepository: postgres_repository.CreateComparisonListPostgresRepository(fields),
 		discountRepository:       postgres_repository.CreateDiscountPostgresRepository(fields),
@@ -68,6 +71,9 @@ func (a *App) initPostgresRepositories() *appRepositoryFields {
 
 func (a *App) initMongoRepositories() *appRepositoryFields {
 	fields := mongo_repository.CreateMongoRepositoryFields(ConfigFileName, ConfigFilePath)
+	if fields == nil {
+		return nil
+	}
 	f := &appRepositoryFields{
 		instrumentRepository:     mongo_repository.CreateInstrumentMongoRepository(fields),
 		userRepository:           mongo_repository.CreateUserMongoRepository(fields),
@@ -85,16 +91,14 @@ var initRepositoriesMap = map[string]func(*App) *appRepositoryFields{
 }
 
 func (a *App) initServices(r *appRepositoryFields) *appServiceFields {
-	lg := logger.New(a.config.LogPath, a.config.LogLevel)
-	a.logger = lg
-	calcDiscountService := servicesImplementation.NewCalcDiscountServiceImplementation(r.discountRepository, lg)
+	calcDiscountService := servicesImplementation.NewCalcDiscountServiceImplementation(r.discountRepository, a.logger)
 	u := &appServiceFields{
 		CalcDiscountService:   calcDiscountService,
-		ComparisonListService: servicesImplementation.NewComparisonListServiceImplementation(r.comparisonListRepository, r.instrumentRepository, lg),
-		DiscountService:       servicesImplementation.NewDiscountServiceImplementation(r.discountRepository, r.userRepository, lg),
-		InstrumentService:     servicesImplementation.NewInstrumentServiceImplementation(r.instrumentRepository, r.userRepository, lg),
-		UserService:           servicesImplementation.NewUserServiceImplementation(r.userRepository, r.comparisonListRepository, calcDiscountService, lg),
-		OrderService:          servicesImplementation.NewOrderServiceImplementation(r.orderRepository, r.comparisonListRepository, r.userRepository, lg),
+		ComparisonListService: servicesImplementation.NewComparisonListServiceImplementation(r.comparisonListRepository, r.instrumentRepository, a.logger),
+		DiscountService:       servicesImplementation.NewDiscountServiceImplementation(r.discountRepository, r.userRepository, a.logger),
+		InstrumentService:     servicesImplementation.NewInstrumentServiceImplementation(r.instrumentRepository, r.userRepository, a.logger),
+		UserService:           servicesImplementation.NewUserServiceImplementation(r.userRepository, r.comparisonListRepository, calcDiscountService, a.logger),
+		OrderService:          servicesImplementation.NewOrderServiceImplementation(r.orderRepository, r.comparisonListRepository, r.userRepository, a.logger),
 	}
 
 	return u
@@ -108,7 +112,14 @@ func (a *App) Init() {
 	}
 	a.config = &c
 
+	lg := logger.New(a.config.LogPath, a.config.LogLevel)
+	a.logger = lg
+
 	a.repositories = initRepositoriesMap[a.config.Db](a)
+	if a.repositories == nil {
+		a.logger.Fatal("init repositories fatal")
+		return
+	}
 	a.services = a.initServices(a.repositories)
 	handlerServices := handlers.HandlersServicesFields{}
 	copier.Copy(&handlerServices, a.services)
